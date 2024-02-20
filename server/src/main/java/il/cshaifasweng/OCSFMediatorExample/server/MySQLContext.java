@@ -41,6 +41,7 @@ public class MySQLContext {
         this.connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s?allowMultiQueries=true&serverTimezone=UTC&user=%s&password=%s", host, port, sanitizedSchema, user, password));
         Alert successAlert = new Alert(AlertType.CONFIRMATION, "Logged in and ready to test.", new ButtonType[]{ButtonType.OK});
         successAlert.showAndWait();
+        //test
     }
 
     public ResultSet executeQuery(String query) {
