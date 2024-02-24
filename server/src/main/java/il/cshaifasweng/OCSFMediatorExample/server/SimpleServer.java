@@ -95,59 +95,12 @@ public class SimpleServer extends AbstractServer {
 				message.setMessage("Error! we got an empty message");
 				client.sendToClient(message);
 			}
-			//we got a request to change submitters IDs with the updated IDs at the end of the string, so we save
-			// the IDs at data field in Message entity and send back to all subscribed clients a request to update
-			//their IDs text fields. An example of use of observer design pattern.
-			//message format: "change submitters IDs: 123456789, 987654321"
 			else if(request.startsWith("change submitters IDs:")){
 				message.setData(request.substring(23));
-				ids = message.getData().substring(0,9);	//formatting the first id
-				if(message.getData().split(", ").length == 2){	// checking for a second id
-					ids +=  message.getData().substring(9,20);
-				}
 				message.setMessage("update submitters IDs");
 				sendToAllClients(message);
 			}
-			//we got a request to add a new client as a subscriber.
-			else if (request.equals("add client")){
-				SubscribedClient connection = new SubscribedClient(client);
-				SubscribersList.add(connection);
-				message.setMessage("client added successfully");
-				client.sendToClient(message);
-			}
-			//we got a message from client requesting to echo Hello, so we will send back to client Hello world!
-			else if(request.startsWith("echo Hello")){
-				message.setMessage("Hello World!");
-				client.sendToClient(message);
-			}
-			else if(request.startsWith("send Submitters IDs")){
-				message.setMessage(ids);
-				client.sendToClient(message);
-			}
-			else if (request.startsWith("send Submitters")){
-				message.setMessage(submitterName);
-				client.sendToClient(message);
-			}
-			else if (request.equals("what’s the time?")) {
-				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-				Date date = new Date();
-				message.setMessage(dateFormat.format(date));
-				client.sendToClient(message);
-			}
-			else if (request.startsWith("multiply")){
-				int numN, numM;
-				numN = Integer.parseInt(request.substring(9).split("\\*")[0]);	//taking n from the message
-				numM = Integer.parseInt(request.substring(9).split("\\*")[1]);	//taking m from the message
-				message.setMessage(numN*numM + "");
-				client.sendToClient(message);
-			}else{
-				//add code here to send received message to all clients.
-				//The string we received in the message is the message we will send back to all clients subscribed.
-				//Example:
-					// message received: "Good morning"
-					// message sent: "Good morning"
-				//see code for changing submitters IDs for help
-				sendToAllClients(message);
+			else{
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
