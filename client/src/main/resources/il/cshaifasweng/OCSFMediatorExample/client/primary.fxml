@@ -5,11 +5,11 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PrimaryController">
    <children>
-      <ListView fx:id="lst" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <Button fx:id="showBtn" layoutX="240.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="126.0" text="show selected" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="240.0" />
-      <Button fx:id="makeBtn" layoutX="250.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="126.0" text="Volunteer" AnchorPane.bottomAnchor="240.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="200.0" />
+      <ListView fx:id="lst" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="440.0" AnchorPane.topAnchor="0.0" />
+      <Button fx:id="showBtn" layoutX="360.0" layoutY="140.0" mnemonicParsing="false" onAction="#showTask" prefHeight="25.0" prefWidth="126.0" text="show selected" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="140.0" />
+      <Button fx:id="makeBtn" layoutX="360.0" layoutY="100.0" mnemonicParsing="false" onAction="#onVolunteer" prefHeight="25.0" prefWidth="126.0" text="Volunteer" AnchorPane.bottomAnchor="340.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="100.0" />
       <TextArea fx:id="txtBox" editable="false" layoutX="320.0" layoutY="280.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="280.0" />
    </children>
 </AnchorPane>

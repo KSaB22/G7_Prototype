@@ -2,14 +2,14 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 
-public class ErrorEvent {
+public class GivenTaskEvent {
     private Message message;
 
     public Message getMessage() {
         return message;
     }
 
-    public ErrorEvent(Message message) {
+    public GivenTaskEvent(Message message) {
         this.message = message;
     }
 }
