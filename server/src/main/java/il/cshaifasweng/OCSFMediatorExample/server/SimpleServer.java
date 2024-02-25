@@ -115,25 +115,7 @@ public class SimpleServer extends AbstractServer {
 			}
 			else if(request.startsWith("give task ")){
 				int index =Integer.parseInt(request.split(" ")[2]);
-				StringBuilder taskdata  = new StringBuilder();
-				if(tasks.get(index).getState() == 0){
-					taskdata.append("Status: Request");
-				} else if (tasks.get(index).getState() == 1) {
-					taskdata.append("Status: Pre-execution");
-				} else {
-					taskdata.append("Status: Done");
-				}
-				taskdata.append("\nTask: ")
-						.append(tasks.get(index).getInfo());
-				taskdata.append("\nCreated by: ")
-						.append(tasks.get(index).getCreator().getUsername());
-				taskdata.append("\nDate created: ")
-						.append(tasks.get(index).getCreated().toString());
-				if(tasks.get(index).getVolunteer() != null){
-					taskdata.append("\nVolunteering now: ")
-							.append(tasks.get(index).getVolunteer().getUsername());
-				}
-				message.setData(taskdata.toString());
+				message.setData(tasks.get(index).toString());
 				message.setMessage("specific task");
 				client.sendToClient(message);
 			}
@@ -162,6 +144,9 @@ public class SimpleServer extends AbstractServer {
 					message.setData(stringForList(tasks));
 					message.setMessage("list of tasks");
 					sendToAllClients(message);
+					message.setData(tasks.get(index).toString());
+					message.setMessage("specific task");
+					client.sendToClient(message);
 				} else {
 					message.setMessage("already vol");
 					client.sendToClient(message);

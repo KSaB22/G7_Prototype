@@ -72,4 +72,27 @@ public class Task {
     public void setCreator(User creator) {
         this.creator = creator;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder taskdata  = new StringBuilder();
+        if(state == 0){
+            taskdata.append("Status: Request");
+        } else if (state == 1) {
+            taskdata.append("Status: Pre-execution");
+        } else {
+            taskdata.append("Status: Done");
+        }
+        taskdata.append("\nTask: ")
+                .append(info);
+        taskdata.append("\nCreated by: ")
+                .append(creator.getUsername());
+        taskdata.append("\nDate created: ")
+                .append(created.toString());
+        if(volunteer != null){
+            taskdata.append("\nVolunteering now: ")
+                    .append(volunteer.getUsername());
+        }
+        return taskdata.toString();
+    }
 }
