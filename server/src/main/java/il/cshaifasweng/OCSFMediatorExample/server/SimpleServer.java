@@ -14,6 +14,7 @@ import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -48,7 +49,14 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private static SessionFactory getSessionFactory() throws HibernateException {
+		String currentDir = System.getProperty("user.dir");
+		System.out.println("Current Working Directory: " + currentDir);
 		Configuration configuration = new Configuration();
+		File propertiesFile = new File("./hibernate.properties");
+		if (propertiesFile.exists()) {
+			System.out.println("New config file found in working directory.");
+			configuration.setProperties(PropertiesLoader.loadFile(propertiesFile));
+		}
 
 		// Add ALL of your entities here. You can also try adding a whole package.
 		configuration.addAnnotatedClass(Task.class);
