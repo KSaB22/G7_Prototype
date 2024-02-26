@@ -71,13 +71,21 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	protected static void generateAll(){
+		String[] temp = {
+				PasswordHashing.generateSalt(),
+				PasswordHashing.generateSalt(),
+				PasswordHashing.generateSalt(),
+				PasswordHashing.generateSalt(),
+				PasswordHashing.generateSalt(),
+				PasswordHashing.generateSalt()
+		};
 		User[] users = new User[]{
-				new User("123456789", "Simon Crespo", "12345",PasswordHashing.generateSalt(), "Haifa", false),
-				new User("987654321", "Haxamanish Waller", "1234", PasswordHashing.generateSalt(), "Haifa", true),
-				new User("465214987", "Petronius Shain", "123",PasswordHashing.generateSalt(), "Haifa", false),
-				new User("548246872", "Shmulik Cohen", "1234",PasswordHashing.generateSalt(), "Tel-aviv", true),
-				new User("985642133", "Roy Nissan", "1234",PasswordHashing.generateSalt(), "Tel-aviv", false),
-				new User("789525642", "Bar Goldberg", "1234",PasswordHashing.generateSalt(), "Tel-aviv", false)};
+				new User("123456789", "Simon Crespo",PasswordHashing.hashPassword("12345",temp[0]),temp[0], "Haifa", false),
+				new User("987654321", "Haxamanish Waller", PasswordHashing.hashPassword("1234",temp[1]), temp[1], "Haifa", true),
+				new User("465214987", "Petronius Shain", PasswordHashing.hashPassword("123",temp[2]),temp[2], "Haifa", false),
+				new User("548246872", "Shmulik Cohen", PasswordHashing.hashPassword("1234",temp[3]),temp[3], "Tel-aviv", true),
+				new User("985642133", "Roy Nissan", PasswordHashing.hashPassword("1234",temp[4]),temp[4], "Tel-aviv", false),
+				new User("789525642", "Bar Goldberg", PasswordHashing.hashPassword("1234",temp[5]),temp[5], "Tel-aviv", false)};
 		Task[] tasks = new Task[]{
 				new Task(0, "fix my washer", LocalDateTime.of(2023,12,5,8,0), users[0], null),
 				new Task(0, "paint my house",LocalDateTime.of(2024,2,5,8,0), users[2],null),
