@@ -10,7 +10,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -19,9 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class PrimaryController{
 
@@ -54,8 +51,9 @@ public class PrimaryController{
 	}
 
 	@Subscribe
-	public void takenSpotEvent(TakenSpotEvent event){
+	public void errorEvent(ErrorEvent event){
 		Platform.runLater(() -> {
+
 			Alert alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
 			alert.setTitle("Error!");
 			alert.setHeaderText("Error:");

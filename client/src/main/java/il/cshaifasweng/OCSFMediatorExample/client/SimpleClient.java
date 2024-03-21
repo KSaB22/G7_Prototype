@@ -23,7 +23,7 @@ public class SimpleClient extends AbstractClient {
 		}else if(message.getMessage().equals("specific task")){
 			EventBus.getDefault().post(new GivenTaskEvent(message));
 		}else if(message.getMessage().equals("already vol")){
-			EventBus.getDefault().post(new TakenSpotEvent(message));
+			EventBus.getDefault().post(new ErrorEvent(message));
 		}
 	}
 	
