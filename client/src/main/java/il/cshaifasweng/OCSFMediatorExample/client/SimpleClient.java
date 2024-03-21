@@ -24,7 +24,14 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new GivenTaskEvent(message));
 		}else if(message.getMessage().equals("already vol")){
 			EventBus.getDefault().post(new ErrorEvent(message));
+		} else if (message.getMessage().equals("account found")) {
+			EventBus.getDefault().post(new LoginEvent(message));
+		} else if(message.getMessage().equals("wrong password")){
+			EventBus.getDefault().post(new ErrorEvent(message));
+		}else if(message.getMessage().equals("no user with that id")){
+			EventBus.getDefault().post(new ErrorEvent(message));
 		}
+
 	}
 	
 	public static SimpleClient getClient() {

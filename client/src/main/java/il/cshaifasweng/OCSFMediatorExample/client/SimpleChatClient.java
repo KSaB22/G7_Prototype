@@ -22,20 +22,25 @@ public class SimpleChatClient extends Application {
 
     private static Scene scene;
     private SimpleClient client;
+    private Stage appStage;
 
     @Override
     public void start(Stage stage) throws IOException {
         client = SimpleClient.getClient();
     	client.openConnection();
         scene = new Scene(loadFXML("secondary"), 640, 480);
+        //this.stage.setTitle("Login page");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+        this.appStage = stage;
     }
 
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
+
+
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(SimpleChatClient.class.getResource(fxml + ".fxml"));

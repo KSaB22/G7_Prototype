@@ -34,7 +34,7 @@ public class PrimaryController{
 	@FXML // fx:id="txtBox"
 	private TextArea txtBox; // Value injected by FXMLLoader
 
-	private int msgId = 0;
+
 	private int currentTask = -1;
 
 
@@ -92,7 +92,7 @@ public class PrimaryController{
 
 
 		try {
-			Message message = new Message(msgId, "add client");
+			Message message = new Message(SecondaryController.msgId, "add client");
 			SimpleClient.getClient().sendToServer(message);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -103,7 +103,7 @@ public class PrimaryController{
 	@FXML
 	void sendMessage(String messagetype) {
 		try {
-			Message message = new Message(msgId++, messagetype);
+			Message message = new Message(SecondaryController.msgId++, messagetype);
 			SimpleClient.getClient().sendToServer(message);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

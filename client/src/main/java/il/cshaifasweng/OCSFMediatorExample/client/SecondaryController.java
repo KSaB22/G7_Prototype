@@ -4,13 +4,19 @@
 
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.io.IOException;
 
 public class SecondaryController {
 
@@ -26,6 +32,8 @@ public class SecondaryController {
     @FXML // fx:id="stressBTN"
     private Button stressBTN; // Value injected by FXMLLoader
 
+
+    public static int msgId = 0;
     @Subscribe
     public void errorEvent(ErrorEvent event){
         Platform.runLater(() -> {
@@ -41,4 +49,34 @@ public class SecondaryController {
         });
     }
 
+    @Subscribe
+    public void loginEvent(LoginEvent event){
+        //todo handle how to switch screens
+    }
+    @FXML
+    void onEMG(ActionEvent event) {
+        sendMessage("emergency");
+    }
+
+    @FXML
+    void onLoginAttempt(ActionEvent event) {
+        if(idTF.getText().isEmpty() || passwordTF.getText().isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "please fill all the boxes");
+            alert.setTitle("Error!");
+            alert.setHeaderText("Error:");
+            alert.show();
+        } else {
+            sendMessage("login " + idTF.getText() + " " + passwordTF.getText());
+        }
+    }
+    @FXML
+    void sendMessage(String messagetype) {
+        try {
+            Message message = new Message(msgId++, messagetype);
+            SimpleClient.getClient().sendToServer(message);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

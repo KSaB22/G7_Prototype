@@ -61,6 +61,7 @@ public class SimpleServer extends AbstractServer {
         // Add ALL of your entities here. You can also try adding a whole package.
         configuration.addAnnotatedClass(Task.class);
         configuration.addAnnotatedClass(User.class);
+        configuration.addAnnotatedClass(EmergencyCall.class);
 
         ServiceRegistry serviceRegistry = new
                 StandardServiceRegistryBuilder()
@@ -115,7 +116,6 @@ public class SimpleServer extends AbstractServer {
     protected static List<Task> getTasks() {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Task> query = builder.createQuery(Task.class);
-
         query.from(Task.class);
         List<Task> data = session.createQuery(query).getResultList();
         return data;
@@ -125,8 +125,8 @@ public class SimpleServer extends AbstractServer {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> query = builder.createQuery(User.class);
         query.from(User.class);
-        List<User> users = session.createQuery(query).getResultList();
-        return users;
+        List<User> data = session.createQuery(query).getResultList();
+        return data;
     }
 
     @Override

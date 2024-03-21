@@ -10,9 +10,9 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.SecondaryController">
    <children>
       <TextField fx:id="idTF" layoutX="246.0" layoutY="197.0" promptText="ID" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="210.0" />
-      <Button fx:id="stressBTN" layoutX="294.0" layoutY="441.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="640.0" style="-fx-background-color: #000000;" text="EMERGENCY" textFill="RED" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Button fx:id="stressBTN" layoutX="294.0" layoutY="441.0" mnemonicParsing="false" onAction="#onEMG" prefHeight="49.0" prefWidth="640.0" style="-fx-background-color: #000000;" text="EMERGENCY" textFill="RED" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
       <PasswordField fx:id="passwordTF" layoutX="246.0" layoutY="240.0" promptText="Password" AnchorPane.bottomAnchor="210.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" />
-      <Button fx:id="loginBTN" layoutX="294.0" layoutY="287.0" mnemonicParsing="false" text="Login" AnchorPane.bottomAnchor="170.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" />
+      <Button fx:id="loginBTN" layoutX="294.0" layoutY="287.0" mnemonicParsing="false" onAction="#onLoginAttempt" text="Login" AnchorPane.bottomAnchor="170.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" />
       <Text layoutX="309.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome" wrappingWidth="240.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
          <font>
             <Font size="57.0" />
