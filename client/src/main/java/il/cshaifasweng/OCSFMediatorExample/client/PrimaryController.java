@@ -34,6 +34,9 @@ public class PrimaryController{
 	@FXML // fx:id="txtBox"
 	private TextArea txtBox; // Value injected by FXMLLoader
 
+	@FXML // fx:id="stressBTN"
+	private Button stressBTN; // Value injected by FXMLLoader
+
 	private String loggedInUser;
 
 	private int currentTask = -1;
@@ -88,6 +91,10 @@ public class PrimaryController{
 		}
 	}
 
+	@FXML
+	void onEMG(ActionEvent event) {
+		sendMessage("emergency " + loggedInUser);
+	}
 	@FXML
 	public void initialize() {
 		EventBus.getDefault().register(this);
