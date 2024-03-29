@@ -22,7 +22,7 @@ public class SimpleChatClient extends Application {
 
     private static Scene scene;
     private SimpleClient client;
-    private Stage appStage;
+    private static Stage appStage;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -32,22 +32,39 @@ public class SimpleChatClient extends Application {
         //this.stage.setTitle("Login page");
         stage.setResizable(false);
         stage.setScene(scene);
+        appStage = stage;
         stage.show();
-        this.appStage = stage;
+
     }
 
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
-
-
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(SimpleChatClient.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
-    
-    
+
+
+    public static void setContent(String pageName) throws IOException {
+        Parent root = loadFXML(pageName);
+        scene = new Scene(root);
+        appStage.setScene(scene);
+        appStage.show();
+    }
+
+    public static void switchScreen(String name){
+        Platform.runLater(() ->
+        {
+            try {
+                setContent("/primary");
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     @Override
 	public void stop() throws Exception {

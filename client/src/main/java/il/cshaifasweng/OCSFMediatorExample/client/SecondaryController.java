@@ -8,7 +8,7 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -32,7 +32,6 @@ public class SecondaryController {
     @FXML // fx:id="stressBTN"
     private Button stressBTN; // Value injected by FXMLLoader
 
-
     public static int msgId = 0;
     @Subscribe
     public void errorEvent(ErrorEvent event){
@@ -50,9 +49,11 @@ public class SecondaryController {
     }
 
     @Subscribe
-    public void loginEvent(LoginEvent event){
+    public void loginEvent(LoginEvent event)  {
         //todo handle how to switch screens
+        SimpleChatClient.switchScreen("primary");
     }
+
     @FXML
     void onEMG(ActionEvent event) {
         sendMessage("emergency");
