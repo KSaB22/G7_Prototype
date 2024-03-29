@@ -30,6 +30,8 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new ErrorEvent(message));
 		}else if(message.getMessage().equals("no user with that id")){
 			EventBus.getDefault().post(new ErrorEvent(message));
+		} else if (message.getMessage().equals("emergency prompt")) {
+			EventBus.getDefault().post(new ErrorEvent(message));
 		}
 
 	}

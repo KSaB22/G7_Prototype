@@ -34,6 +34,7 @@ public class PrimaryController{
 	@FXML // fx:id="txtBox"
 	private TextArea txtBox; // Value injected by FXMLLoader
 
+	private String loggedInUser;
 
 	private int currentTask = -1;
 
@@ -53,10 +54,18 @@ public class PrimaryController{
 	@Subscribe
 	public void errorEvent(ErrorEvent event){
 		Platform.runLater(() -> {
+			Alert alert;
+			if(event.getMessage().getMessage().equals("emergency prompt")){
+				alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
+				alert.setTitle("Emergency recorded");
+				alert.setHeaderText("Emergency");
+			}
+			else {
+				alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
+				alert.setTitle("Error!");
+				alert.setHeaderText("Error:");
+			}
 
-			Alert alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
-			alert.setTitle("Error!");
-			alert.setHeaderText("Error:");
 			alert.show();
 		});
 	}
@@ -73,7 +82,7 @@ public class PrimaryController{
 	@FXML
 	void onVolunteer(ActionEvent event) {
 		if(currentTask != -1){
-			sendMessage("volunteer in " + currentTask);
+			sendMessage("volunteer in " + currentTask + " " + loggedInUser);
 		} else {
 			txtBox.setText("please select a task");
 		}
@@ -98,6 +107,9 @@ public class PrimaryController{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	void initData(String username){
+		loggedInUser = username;
 	}
 
 	@FXML

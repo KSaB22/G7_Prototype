@@ -46,19 +46,21 @@ public class SimpleChatClient extends Application {
         return fxmlLoader.load();
     }
 
-
-    public static void setContent(String pageName) throws IOException {
-        Parent root = loadFXML(pageName);
+    public static void setContent(String pageName, String data) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(SimpleChatClient.class.getResource(pageName + ".fxml"));
+        Parent root = fxmlLoader.load();
         scene = new Scene(root);
         appStage.setScene(scene);
+        PrimaryController pc = fxmlLoader.getController();
+        pc.initData(data);
         appStage.show();
     }
 
-    public static void switchScreen(String name){
+    public static void switchScreen(String name, String data){
         Platform.runLater(() ->
         {
             try {
-                setContent("/primary");
+                setContent("primary", data);
             }
             catch (IOException e) {
                 e.printStackTrace();

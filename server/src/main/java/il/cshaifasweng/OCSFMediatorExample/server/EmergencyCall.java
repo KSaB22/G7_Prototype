@@ -48,4 +48,12 @@ public class EmergencyCall {
     public void setTime(LocalDateTime time) {
         this.time = time;
     }
+
+    @Override
+    public String toString() {
+        return "Time of emergency: " + time.toString() +
+                "\nName: " + creator.getUsername() +
+                "\nID: " + creator.getId() +
+                "\nCommunity: " + creator.getCommunity();
+    }
 }

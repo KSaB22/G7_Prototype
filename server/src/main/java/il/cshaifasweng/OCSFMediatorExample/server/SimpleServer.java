@@ -154,29 +154,30 @@ public class SimpleServer extends AbstractServer {
                 client.sendToClient(message);
             } else if (request.startsWith("volunteer in")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
+                String userid = request.split(" ")[3];
                 if (tasks.get(index).getVolunteer() == null) {
 
-                    //todo : notice me im random
-                    Random random = new Random();
-                    int randomUser = random.nextInt(users.size());
+                    for (int i = 0; i < users.size(); i++) {
+                        if (userid.equals(users.get(i).getId())) {
+                            String addvol = "UPDATE Task t SET t.volunteer = :newvol , t.state = 1 WHERE t.num = :whattask";
+                            session.createQuery(addvol)
+                                    .setString("newvol", users.get(i).getId())
+                                    .setInteger("whattask", tasks.get(index).getNum())
+                                    .executeUpdate();
 
-                    String addvol = "UPDATE Task t SET t.volunteer = :newvol , t.state = 1 WHERE t.num = :whattask";
-                    session.createQuery(addvol)
-                            .setString("newvol", users.get(randomUser).getId())
-                            .setInteger("whattask", tasks.get(index).getNum())
-                            .executeUpdate();
+                            session.flush();
 
-                    session.flush();
+                            tasks.get(index).setState(1);
+                            tasks.get(index).setVolunteer(users.get(i));// i cant update in time so this will do
 
-                    tasks.get(index).setState(1);
-                    tasks.get(index).setVolunteer(users.get(random.nextInt(users.size())));// i cant update in time so this will do
-
-                    message.setData(stringForList(tasks));
-                    message.setMessage("list of tasks");
-                    sendToAllClients(message);
-                    message.setData(tasks.get(index).toString());
-                    message.setMessage("specific task");
-                    client.sendToClient(message);
+                            message.setData(stringForList(tasks));
+                            message.setMessage("list of tasks");
+                            sendToAllClients(message);
+                            message.setData(tasks.get(index).toString());
+                            message.setMessage("specific task");
+                            client.sendToClient(message);
+                        }
+                    }
                 } else {
                     message.setMessage("already vol");
                     client.sendToClient(message);
@@ -205,13 +206,19 @@ public class SimpleServer extends AbstractServer {
                 message.setMessage("no user with that id");
                 client.sendToClient(message);
             } else if (request.startsWith("emergency")) {
-                EmergencyCall temp;
-                if(request.length() == "emergency".length()){
-                    temp = new EmergencyCall();
-                } else {
-                    //todo think of a way to store which user
-                    temp = new EmergencyCall();
+                EmergencyCall temp = new EmergencyCall(users.get(users.size() - 1));
+                if (request.length() > "emergency".length()) {
+                    String userid = request.split(" ")[1];
+                    for (int i = 0; i < users.size(); i++) {
+                        if (users.get(i).getId().equals(userid)) {
+                            temp = new EmergencyCall(users.get(i));
+                        }
+                    }
                 }
+
+                message.setMessage("emergency prompt");
+                message.setData(temp.toString());
+                client.sendToClient(message);
                 session.save(temp);
                 session.flush();
                 session.getTransaction().commit();

@@ -6,6 +6,8 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
@@ -37,21 +40,27 @@ public class SecondaryController {
     public void errorEvent(ErrorEvent event){
         Platform.runLater(() -> {
             Alert alert;
-            if (event.getMessage().getMessage().equals("no user with that id")) {
+            if(event.getMessage().getMessage().equals("emergency prompt")){
+                alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
+                alert.setTitle("Emergency recorded");
+                alert.setHeaderText("Emergency");
+            }
+            else if (event.getMessage().getMessage().equals("no user with that id")) {
                 alert = new Alert(Alert.AlertType.ERROR, "A user with this ID does not exist");
+                alert.setTitle("Error!");
+                alert.setHeaderText("Error:");
             } else/* if (event.getMessage().getMessage().equals("wrong password"))*/{
                 alert = new Alert(Alert.AlertType.ERROR, "Wrong password");
+                alert.setTitle("Error!");
+                alert.setHeaderText("Error:");
             }
-            alert.setTitle("Error!");
-            alert.setHeaderText("Error:");
             alert.show();
         });
     }
 
     @Subscribe
     public void loginEvent(LoginEvent event)  {
-        //todo handle how to switch screens
-        SimpleChatClient.switchScreen("primary");
+        SimpleChatClient.switchScreen("primary", idTF.getText());
     }
 
     @FXML
@@ -79,5 +88,9 @@ public class SecondaryController {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    @FXML
+    public void initialize() {
+        EventBus.getDefault().register(this);
     }
 }
