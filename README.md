@@ -1,1 +1,1 @@
-[![project progress](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://github.com/users/KSaB22/projects/2/views/1)
+[![project progress](https://icon-library.com/images/status-report-icon/status-report-icon-2.jpg)](https://github.com/users/KSaB22/projects/2/views/1)
