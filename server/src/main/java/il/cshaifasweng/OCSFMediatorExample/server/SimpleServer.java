@@ -128,6 +128,15 @@ public class SimpleServer extends AbstractServer {
         List<User> data = session.createQuery(query).getResultList();
         return data;
     }
+    protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks){
+        ArrayList<Task> temp = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getState() != 2) {
+                temp.add(t);
+            }
+        }
+        return temp;
+    }
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -141,45 +150,76 @@ public class SimpleServer extends AbstractServer {
 
             List<Task> tasks = getTasks();
             List<User> users = getUsers();
-
+            ArrayList<Task> unfinishedTasks = getUnfinishedTasks(tasks);
             if (request.startsWith("pull tasks")) {
 
-                message.setData(stringForList(tasks));
+                message.setData(stringForList(unfinishedTasks));
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
             } else if (request.startsWith("give task ")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
-                message.setData(tasks.get(index).toString());
+                if(request.endsWith("all"))
+                    message.setData(tasks.get(index).toString());
+                else
+                    message.setData(unfinishedTasks.get(index).toString());
                 message.setMessage("specific task");
                 client.sendToClient(message);
             } else if (request.startsWith("volunteer in")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
                 String userid = request.split(" ")[3];
-                if (tasks.get(index).getVolunteer() == null) {
+                if (unfinishedTasks.get(index).getVolunteer() == null) {
 
                     for (int i = 0; i < users.size(); i++) {
                         if (userid.equals(users.get(i).getId())) {
                             String addvol = "UPDATE Task t SET t.volunteer = :newvol , t.state = 1 WHERE t.num = :whattask";
                             session.createQuery(addvol)
                                     .setString("newvol", users.get(i).getId())
-                                    .setInteger("whattask", tasks.get(index).getNum())
+                                    .setInteger("whattask", unfinishedTasks.get(index).getNum())
                                     .executeUpdate();
 
                             session.flush();
 
-                            tasks.get(index).setState(1);
-                            tasks.get(index).setVolunteer(users.get(i));// i cant update in time so this will do
+                            unfinishedTasks.get(index).setState(1);
+                            unfinishedTasks.get(index).setVolunteer(users.get(i));// i cant update in time so this will do
 
-                            message.setData(stringForList(tasks));
+                            message.setData(stringForList(unfinishedTasks));
                             message.setMessage("list of tasks");
                             sendToAllClients(message);
-                            message.setData(tasks.get(index).toString());
+                            message.setData(unfinishedTasks.get(index).toString());
                             message.setMessage("specific task");
                             client.sendToClient(message);
                         }
                     }
                 } else {
                     message.setMessage("already vol");
+                    client.sendToClient(message);
+                }
+            } else if (request.startsWith("finish")) {
+                int index = Integer.parseInt(request.split(" ")[1]);
+                String userid = request.split(" ")[2];
+                if (unfinishedTasks.get(index).getVolunteer().getId().equals(userid)) {
+                    String addvol = "UPDATE Task t SET t.volunteer = :newvol , t.state = 2 WHERE t.num = :whattask";
+                    session.createQuery(addvol)
+                            .setString("newvol", userid)
+                            .setInteger("whattask", unfinishedTasks.get(index).getNum())
+                            .executeUpdate();
+
+                    session.flush();
+
+                    unfinishedTasks.get(index).setState(2);//doesnt update in time
+
+                    message.setData(unfinishedTasks.get(index).toString());
+                    message.setMessage("specific task");
+                    client.sendToClient(message);
+
+                    unfinishedTasks.remove(index);
+
+                    message.setData(stringForList(unfinishedTasks));
+                    message.setMessage("list of tasks");
+                    sendToAllClients(message);
+
+                } else {
+                    message.setMessage("not volunteer");
                     client.sendToClient(message);
                 }
             } else if (request.equals("add client")) {

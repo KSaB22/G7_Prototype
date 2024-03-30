@@ -10,7 +10,7 @@ public class Task {
     @Id
     @GeneratedValue (strategy =  GenerationType.IDENTITY)
     private int num;
-    private int state;
+    private int state;// state -1 = new;  0 = approved; 1 = volunteered; 2 = done
     private String info;
     private LocalDateTime created;
     @ManyToOne

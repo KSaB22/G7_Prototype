@@ -25,8 +25,11 @@ public class PrimaryController{
 	@FXML // fx:id="lst"
 	private ListView<String> lst; // Value injected by FXMLLoader
 
-	@FXML // fx:id="makeBtn"
-	private Button makeBtn; // Value injected by FXMLLoader
+	@FXML // fx:id="finishBtn"
+	private Button finishBtn; // Value injected by FXMLLoader
+
+	@FXML // fx:id="volunteerBtn"
+	private Button volunteerBtn; // Value injected by FXMLLoader
 
 	@FXML // fx:id="showBtn"
 	private Button showBtn; // Value injected by FXMLLoader
@@ -94,6 +97,14 @@ public class PrimaryController{
 	@FXML
 	void onEMG(ActionEvent event) {
 		sendMessage("emergency " + loggedInUser);
+	}
+	@FXML
+	void onEndRequest(ActionEvent event) {
+		if(currentTask != -1){
+			sendMessage("finish "+ currentTask +  " " + loggedInUser);
+		} else {
+			txtBox.setText("please select a task");
+		}
 	}
 	@FXML
 	public void initialize() {
