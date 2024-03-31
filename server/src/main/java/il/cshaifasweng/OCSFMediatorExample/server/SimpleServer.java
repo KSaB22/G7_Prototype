@@ -131,7 +131,7 @@ public class SimpleServer extends AbstractServer {
     protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks){
         ArrayList<Task> temp = new ArrayList<>();
         for (Task t : tasks) {
-            if (t.getState() != 2) {
+            if (t.getState() != 2 && t.getState() != -1) {
                 temp.add(t);
             }
         }
@@ -262,6 +262,21 @@ public class SimpleServer extends AbstractServer {
                 session.save(temp);
                 session.flush();
                 session.getTransaction().commit();
+            } else if(request.startsWith("new task ")){
+                String userid = request.split(" ")[2];
+                String info = request.substring(19);
+                Task temp = null;
+                for (User user : users) {
+                    if (user.getId().equals(userid)) {
+                        temp = new Task(-1, info, LocalDateTime.now(), user, null);
+                        session.save(temp);
+                        session.flush();
+                        break;
+                    }
+                }
+                message.setMessage("specific task");
+                message.setData(temp.toString());
+                client.sendToClient(message);
             }
         } catch (Exception exception) {
             if (session != null) {
