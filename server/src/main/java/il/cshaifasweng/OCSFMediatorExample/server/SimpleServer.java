@@ -4,6 +4,10 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,20 +20,32 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import java.util.*;
 
 public class SimpleServer extends AbstractServer {
 
     private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
+    private static ArrayList<SubscribedClient> activeVolenteers = new ArrayList<>();
+    private static ArrayList<Task> awaitingEnd = new ArrayList<>();
+
     private static Session session;
 
     public SimpleServer(int port) {
         super(port);
+
         try {
             SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
             session.beginTransaction();
-            generateAll();
+            //generateAll();
+
         } catch (Exception exception) {
             if (session != null) {
                 session.getTransaction().rollback();
@@ -39,6 +55,31 @@ public class SimpleServer extends AbstractServer {
         } finally {
             session.close();
         }
+        checkOnVolunteers();
+    }
+
+    public void checkOnVolunteers() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable toRun = new Runnable() {
+            public void run() {
+                LocalDateTime currentTime = LocalDateTime.now();
+                System.out.println("checked up on Volunteers");
+                Message message = new Message(0, "check for update");
+                for (int i = 0; i < awaitingEnd.size(); i++) {
+                    if (currentTime.isAfter(awaitingEnd.get(i).getCreated())) {
+                        try {
+                            message.setMessage("check for updates " + i);
+                            message.setData(awaitingEnd.toString());
+                            activeVolenteers.get(i).getClient().sendToClient(message);
+
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                }
+            }
+        };
+        ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate(toRun, 1, 24, TimeUnit.HOURS);
     }
 
     private static SessionFactory getSessionFactory() throws HibernateException {
@@ -130,7 +171,7 @@ public class SimpleServer extends AbstractServer {
         return data;
     }
 
-    protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks){
+    protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks) {
         ArrayList<Task> temp = new ArrayList<>();
         for (Task t : tasks) {
             if (t.getState() != 2 && t.getState() != -1) {
@@ -139,6 +180,7 @@ public class SimpleServer extends AbstractServer {
         }
         return temp;
     }
+
 
     protected static ArrayList<Task> getRequests(List<Task> tasks,String community){
         ArrayList<Task> temp = new ArrayList<>();
@@ -197,7 +239,7 @@ public class SimpleServer extends AbstractServer {
                 }
             } else if (request.startsWith("give task ")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
-                if(request.endsWith("all"))
+                if (request.endsWith("all"))
                     message.setData(tasks.get(index).toString());
                 else
                     message.setData(unfinishedTasks.get(index).toString());
@@ -221,6 +263,11 @@ public class SimpleServer extends AbstractServer {
                             unfinishedTasks.get(index).setState(1);
                             unfinishedTasks.get(index).setVolunteer(users.get(i));// i cant update in time so this will do
 
+                            SubscribedClient connection = new SubscribedClient(client);
+                            activeVolenteers.add(connection);
+
+                            awaitingEnd.add(unfinishedTasks.get(index));
+
                             message.setData(stringForList(unfinishedTasks));
                             message.setMessage("list of tasks");
                             sendToAllClients(message);
@@ -236,30 +283,62 @@ public class SimpleServer extends AbstractServer {
             } else if (request.startsWith("finish")) {
                 int index = Integer.parseInt(request.split(" ")[1]);
                 String userid = request.split(" ")[2];
-                if (unfinishedTasks.get(index).getVolunteer().getId().equals(userid)) {
-                    String addvol = "UPDATE Task t SET t.volunteer = :newvol , t.state = 2 WHERE t.num = :whattask";
+                if (request.endsWith(userid)) {
+                    if (unfinishedTasks.get(index).getVolunteer().getId().equals(userid)) {
+                        String addvol = "UPDATE Task t SET t.state = 2 WHERE t.num = :whattask";
+                        session.createQuery(addvol)
+                                .setInteger("whattask", unfinishedTasks.get(index).getNum())
+                                .executeUpdate();
+
+                        session.flush();
+
+                        unfinishedTasks.get(index).setState(2);//doesnt update in time
+
+                        message.setData(unfinishedTasks.get(index).toString());
+                        message.setMessage("specific task");
+                        client.sendToClient(message);
+
+
+                        for (int i = 0; i < awaitingEnd.size(); i++) {
+                            if (awaitingEnd.get(i).getNum() == unfinishedTasks.get(index).getNum()) {
+                                activeVolenteers.remove(i);
+                                awaitingEnd.remove(i);
+                                break;
+                            }
+                        }
+
+                        unfinishedTasks.remove(index);
+
+                        message.setData(stringForList(unfinishedTasks));
+                        message.setMessage("list of tasks");
+                        sendToAllClients(message);
+
+                    } else {
+                        message.setMessage("not volunteer");
+                        client.sendToClient(message);
+                    }
+                } else {
+                    String addvol = "UPDATE Task t SET t.state = 2 WHERE t.num = :whattask";
                     session.createQuery(addvol)
-                            .setString("newvol", userid)
-                            .setInteger("whattask", unfinishedTasks.get(index).getNum())
+                            .setInteger("whattask", awaitingEnd.get(index).getNum())
                             .executeUpdate();
 
                     session.flush();
 
-                    unfinishedTasks.get(index).setState(2);//doesnt update in time
 
-                    message.setData(unfinishedTasks.get(index).toString());
-                    message.setMessage("specific task");
-                    client.sendToClient(message);
+                    int i;
+                    for (i = 0; i < awaitingEnd.size(); i++) {
+                        if(awaitingEnd.get(index).getNum() == unfinishedTasks.get(i).getNum()) {
+                            unfinishedTasks.remove(i);
+                        }
+                    }
 
-                    unfinishedTasks.remove(index);
+                    activeVolenteers.remove(index);
+                    awaitingEnd.remove(index);
 
                     message.setData(stringForList(unfinishedTasks));
                     message.setMessage("list of tasks");
                     sendToAllClients(message);
-
-                } else {
-                    message.setMessage("not volunteer");
-                    client.sendToClient(message);
                 }
             } else if (request.equals("add client")) {
                 SubscribedClient connection = new SubscribedClient(client);
@@ -273,11 +352,11 @@ public class SimpleServer extends AbstractServer {
                 for (int i = 0; i < users.size(); i++) {
                     if (userid.equals(users.get(i).getId())) {
                         if (PasswordHashing.hashPassword(password, users.get(i).getSalt()).equals(users.get(i).getPassword())) {
-                            if(users.get(i).isManger()){
+                            if (users.get(i).isManger()) {
                                 message.setMessage("manager found");
                                 message.setData(userid);
                                 client.sendToClient(message);
-                            }else {
+                            } else {
                                 message.setMessage("account found");
                                 client.sendToClient(message);
                             }
@@ -307,7 +386,7 @@ public class SimpleServer extends AbstractServer {
                 session.save(temp);
                 session.flush();
                 session.getTransaction().commit();
-            } else if(request.startsWith("new task ")){
+            } else if (request.startsWith("new task ")) {
                 String userid = request.split(" ")[2];
                 String info = request.substring(19);
                 Task temp = null;
@@ -326,18 +405,19 @@ public class SimpleServer extends AbstractServer {
                 String managerId = request.split(" ")[2];
                 String community = getMangerCommunity(users,managerId);
                 ArrayList<Task> requests = getRequests(tasks,community);
+
                 message.setData(stringForList(requests));
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
 
-            } else if (request.startsWith("pull emergency")){
+            } else if (request.startsWith("pull emergency")) {
                 StringBuilder temp = new StringBuilder();
-                for (EmergencyCall e : emergencyCalls){
+                for (EmergencyCall e : emergencyCalls) {
                     temp.append(" Emergency call : ")
                             .append(e.toString())
                             .append(".");
                 }
-                message.setData(temp.toString()) ;
+                message.setData(temp.toString());
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
             } else if (request.startsWith("pull users")){
@@ -398,7 +478,6 @@ public class SimpleServer extends AbstractServer {
         }
         return temp.toString();
     }
-
 
 
 }
