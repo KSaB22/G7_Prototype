@@ -71,4 +71,11 @@ public class User {
     public void setManger(boolean manger) {
         isManger = manger;
     }
+
+    @Override
+    public String toString() {
+        return "Username: " + username +
+                "\nID: " + id +
+                "\nCommunity: " + getCommunity();
+    }
 }

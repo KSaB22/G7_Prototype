@@ -50,6 +50,9 @@ public class MangerPage {
 
     @FXML // fx:id="txtBox"
     private TextArea txtBox; // Value injected by FXMLLoader
+    @FXML // fx:id="usersBtn"
+    private Button usersBtn; // Value injected by FXMLLoader
+
 
     private String loggedInUser;
     private int currentTask = -1;
@@ -121,12 +124,17 @@ public class MangerPage {
 
     @FXML
     void onTaskList(ActionEvent event) {//show ongoing tasks
-        sendMessage("pull tasks");
+        sendMessage("pull tasks "+ loggedInUser);
     }
 
     @FXML
     void showEmgCall(ActionEvent event) {
         sendMessage("pull emergency");
+    }
+    @FXML
+    void onUsers(ActionEvent event) {
+        sendMessage("pull users " + loggedInUser);
+
     }
 
 
@@ -134,7 +142,7 @@ public class MangerPage {
     @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
-        sendMessage("pull tasks");
+        //sendMessage("pull tasks " + loggedInUser);
         lst.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {

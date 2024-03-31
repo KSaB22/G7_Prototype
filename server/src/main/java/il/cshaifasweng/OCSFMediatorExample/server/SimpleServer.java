@@ -27,6 +27,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import java.util.*;
+
 public class SimpleServer extends AbstractServer {
 
     private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
@@ -179,15 +181,28 @@ public class SimpleServer extends AbstractServer {
         return temp;
     }
 
-    protected static ArrayList<Task> getRequests(List<Task> tasks) {
+
+    protected static ArrayList<Task> getRequests(List<Task> tasks,String community){
         ArrayList<Task> temp = new ArrayList<>();
         for (Task t : tasks) {
-            if (t.getState() == 0) {
-                temp.add(t);
+            if (t.getState() == -1) { 
+                if (t.getCreator().getCommunity().equals(community)) {
+                    temp.add(t);
+                }
             }
         }
         return temp;
     }
+    protected static String getMangerCommunity(List<User> users, String Id) {
+        String com =null;
+        for(User u : users){
+            if(u.getId().equals(Id) ){
+                return u.getCommunity();
+            }
+        }
+        return com;
+    }
+
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -204,10 +219,24 @@ public class SimpleServer extends AbstractServer {
             List<EmergencyCall> emergencyCalls = getEmergencyCalls();
             ArrayList<Task> unfinishedTasks = getUnfinishedTasks(tasks);
             if (request.startsWith("pull tasks")) {
-
-                message.setData(stringForList(unfinishedTasks));
-                message.setMessage("list of tasks");
-                client.sendToClient(message);
+                if(request.endsWith("tasks"))
+                {
+                    message.setData(stringForList(unfinishedTasks));
+                    message.setMessage("list of tasks");
+                    client.sendToClient(message);
+                }else{
+                    ArrayList<Task> unfinishedTaskCom = new ArrayList<>();
+                    String managerId = request.split(" ")[2];
+                    String com = getMangerCommunity(users,managerId);
+                    for( int j = 0 ; j<unfinishedTasks.size();j++){
+                        if(unfinishedTasks.get(j).getCreator().getCommunity().equals(com)){
+                            unfinishedTaskCom.add(unfinishedTasks.get(j));
+                        }
+                    }
+                    message.setData(stringForList(unfinishedTaskCom));
+                    message.setMessage("list of tasks");
+                    client.sendToClient(message);
+                }
             } else if (request.startsWith("give task ")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
                 if (request.endsWith("all"))
@@ -372,8 +401,11 @@ public class SimpleServer extends AbstractServer {
                 message.setMessage("specific task");
                 message.setData(temp.toString());
                 client.sendToClient(message);
-            } else if (request.startsWith("pull requests")) {
-                ArrayList<Task> requests = getRequests(tasks);
+            } else if (request.startsWith("pull requests")){
+                String managerId = request.split(" ")[2];
+                String community = getMangerCommunity(users,managerId);
+                ArrayList<Task> requests = getRequests(tasks,community);
+
                 message.setData(stringForList(requests));
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
@@ -388,6 +420,20 @@ public class SimpleServer extends AbstractServer {
                 message.setData(temp.toString());
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
+            } else if (request.startsWith("pull users")){
+                StringBuilder temp = new StringBuilder();
+                String managerId = request.split(" ")[2];
+                String community = getMangerCommunity(users,managerId);
+                for (int i = 0; i < users.size(); i++){
+                    if(users.get(i).getCommunity().equals(community)){
+                        temp.append("User: ").append(users.get(i).toString()).append(".");
+                    }
+
+                }
+                message.setData(temp.toString()) ;
+                message.setMessage("list of tasks");
+                client.sendToClient(message);
+
             }
 
 
@@ -420,6 +466,8 @@ public class SimpleServer extends AbstractServer {
                 temp.append("Status: Request");
             } else if (t.getState() == 1) {
                 temp.append("Status: Pre-execution");
+            } else if (t.getState() == -1){
+                temp.append("Status: Awaiting approval");
             } else {
                 temp.append("Status: Done");
             }

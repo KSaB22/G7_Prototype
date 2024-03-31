@@ -51,8 +51,13 @@ public class SimpleChatClient extends Application {
         Parent root = fxmlLoader.load();
         scene = new Scene(root);
         appStage.setScene(scene);
-        PrimaryController pc = fxmlLoader.getController();
-        pc.initData(data);
+        if(pageName.equals("primary")) {
+            PrimaryController pc = fxmlLoader.getController();
+            pc.initData(data);
+        }else {
+            MangerPage pc = fxmlLoader.getController();
+            pc.initData(data);
+        }
         appStage.show();
     }
 
