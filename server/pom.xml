@@ -14,8 +14,7 @@
 	<packaging>jar</packaging>
 
 	<name>server</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<url>https://github.com/KSaB22/G7_Prototype</url>
 	<dependencies>
 		<dependency>
 			<groupId>mysql</groupId>

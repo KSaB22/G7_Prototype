@@ -90,7 +90,6 @@ public class SecondaryController {
             Message message = new Message(msgId++, messagetype);
             SimpleClient.getClient().sendToServer(message);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
