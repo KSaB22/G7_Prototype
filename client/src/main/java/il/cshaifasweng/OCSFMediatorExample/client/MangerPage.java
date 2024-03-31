@@ -123,7 +123,7 @@ public class MangerPage {
     }
 
     @FXML
-    void onReject(ActionEvent event) {//todo : reject request
+    void onReject(ActionEvent event) {
         if (currentTask != -1) {
             txtBox.setText("Please report back to user");
             txtBox.clear();
