@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.MangerPage">
    <children>
       <ListView fx:id="lst" layoutX="-6.0" prefHeight="480.0" prefWidth="226.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="440.0" AnchorPane.topAnchor="0.0" />
@@ -34,6 +33,7 @@
             <Button fx:id="reqBtn" mnemonicParsing="false" onAction="#onRequests" prefHeight="47.0" prefWidth="172.0" text="Requests" GridPane.columnIndex="1" />
             <Button fx:id="accBtn" mnemonicParsing="false" onAction="#onAccept" prefHeight="39.0" prefWidth="53.0" text="Accept" visible="false" />
             <Button fx:id="rejBtn" mnemonicParsing="false" onAction="#onReject" prefHeight="39.0" prefWidth="53.0" text="Reject" visible="false" GridPane.columnIndex="2" />
+            <Button fx:id="usersBtn" mnemonicParsing="false" onAction="#onUsers" prefHeight="57.0" prefWidth="172.0" text="Users" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          </children>
       </GridPane>
       <Button fx:id="sendBtn" layoutX="200.0" layoutY="254.0" mnemonicParsing="false" onAction="#onSend" text="send" />
