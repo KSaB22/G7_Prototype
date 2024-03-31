@@ -147,6 +147,8 @@ public class SimpleServer extends AbstractServer {
         session.getTransaction().commit();
     }
 
+    // DATABASE FUNCTIONS
+
     protected static List<Task> getTasks() {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Task> query = builder.createQuery(Task.class);
@@ -203,6 +205,13 @@ public class SimpleServer extends AbstractServer {
         return com;
     }
 
+    protected static Task getTaskById(int taskId) {
+    //     TODO
+        return session.get(Task.class, taskId);
+    }
+
+
+    // CLIENT MESSAGE HANDLING
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -234,6 +243,7 @@ public class SimpleServer extends AbstractServer {
                         }
                     }
                     message.setData(stringForList(unfinishedTaskCom));
+                    message.setLst(getTaskIdsLst(unfinishedTaskCom));
                     message.setMessage("list of tasks");
                     client.sendToClient(message);
                 }
@@ -243,6 +253,12 @@ public class SimpleServer extends AbstractServer {
                     message.setData(tasks.get(index).toString());
                 else
                     message.setData(unfinishedTasks.get(index).toString());
+                message.setMessage("specific task");
+                client.sendToClient(message);
+            } else if (request.startsWith("get task by id")) {
+                int taskNum = Integer.parseInt(message.getData());
+                Task task = getTaskById(taskNum);
+                message.setData(task.toString());
                 message.setMessage("specific task");
                 client.sendToClient(message);
             } else if (request.startsWith("volunteer in")) {
@@ -405,7 +421,7 @@ public class SimpleServer extends AbstractServer {
                 String managerId = request.split(" ")[2];
                 String community = getMangerCommunity(users,managerId);
                 ArrayList<Task> requests = getRequests(tasks,community);
-
+                message.setLst(getTaskIdsLst(requests));
                 message.setData(stringForList(requests));
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
@@ -459,6 +475,8 @@ public class SimpleServer extends AbstractServer {
         }
     }
 
+    // HELPER-FUNCTIONS
+
     private static String stringForList(List<Task> tasks) {
         StringBuilder temp = new StringBuilder();
         for (Task t : tasks) {    //each task look like "Status: 0-2 Task: bla" the . is there to separate for the list
@@ -479,5 +497,11 @@ public class SimpleServer extends AbstractServer {
         return temp.toString();
     }
 
-
+    private ArrayList<Integer> getTaskIdsLst(ArrayList<Task> tasks) {
+        ArrayList<Integer> lst = new ArrayList<>();
+        for(Task task: tasks) {
+            lst.add(task.getNum());
+        }
+        return lst;
+    }
 }
