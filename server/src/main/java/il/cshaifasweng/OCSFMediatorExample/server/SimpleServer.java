@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleServer extends AbstractServer {
 
@@ -53,26 +57,27 @@ public class SimpleServer extends AbstractServer {
     }
 
     public void checkOnVolunteers() {
-        Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
-            LocalDateTime currentTime = LocalDateTime.now();
-            Message message = new Message(0, "check for update");
-            for (int i = 0; i < awaitingEnd.size(); i++) {
-                if (currentTime.isAfter(awaitingEnd.get(i).getCreated())) {
-                    try {
-                        message.setMessage("check for updates " + i);
-                        message.setData(awaitingEnd.toString());
-                        activeVolenteers.get(i).getClient().sendToClient(message);
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable toRun = new Runnable() {
+            public void run() {
+                LocalDateTime currentTime = LocalDateTime.now();
+                System.out.println("checked up on Volunteers");
+                Message message = new Message(0, "check for update");
+                for (int i = 0; i < awaitingEnd.size(); i++) {
+                    if (currentTime.isAfter(awaitingEnd.get(i).getCreated())) {
+                        try {
+                            message.setMessage("check for updates " + i);
+                            message.setData(awaitingEnd.toString());
+                            activeVolenteers.get(i).getClient().sendToClient(message);
 
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
-        }),
-                new KeyFrame(Duration.seconds(1))
-        );
-        clock.setCycleCount(Animation.INDEFINITE);
-        clock.play();
+        };
+        ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate(toRun, 1, 24, TimeUnit.HOURS);
     }
 
     private static SessionFactory getSessionFactory() throws HibernateException {
