@@ -80,6 +80,23 @@ public class PrimaryController {
         });
     }
 
+    @Subscribe
+    public void checkingEvent(CheckingEvent event){
+        Dialog dialog = new Dialog();
+        dialog.setTitle("Did you finish this task?");
+        dialog.setHeaderText(event.getMessage().getData());
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.YES);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.NO);
+        Optional<ButtonType> result = dialog.showAndWait();
+        if(result.isPresent()){
+            if(result.get() == ButtonType.YES){
+                sendMessage("finish " + event.getMessage().getMessage().split(" ")[3] + " " + loggedInUser);
+            } else if(result.get() == ButtonType.NO){
+                dialog.close();
+            }
+        }
+    }
+
 
     @FXML
     void showTask(ActionEvent event) {
