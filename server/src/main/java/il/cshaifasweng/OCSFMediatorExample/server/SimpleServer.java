@@ -44,7 +44,7 @@ public class SimpleServer extends AbstractServer {
             SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
             session.beginTransaction();
-            //generateAll();
+            generateAll();
 
         } catch (Exception exception) {
             if (session != null) {
@@ -248,7 +248,7 @@ public class SimpleServer extends AbstractServer {
             } else if (request.startsWith("volunteer in")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
                 String userid = request.split(" ")[3];
-                if (unfinishedTasks.get(index).getVolunteer() == null) {
+                if (unfinishedTasks.get(index).getState() == 0) {
 
                     for (int i = 0; i < users.size(); i++) {
                         if (userid.equals(users.get(i).getId())) {

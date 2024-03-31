@@ -65,36 +65,45 @@ public class PrimaryController {
     @Subscribe
     public void errorEvent(ErrorEvent event) {
         Platform.runLater(() -> {
-            Alert alert;
+            Alert alert = null;
             if (event.getMessage().getMessage().equals("emergency prompt")) {
                 alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
                 alert.setTitle("Emergency recorded");
                 alert.setHeaderText("Emergency");
-            } else {
+            } else if (event.getMessage().getMessage().equals("already vol")) {
                 alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
                 alert.setTitle("Error!");
                 alert.setHeaderText("Error:");
             }
 
-            alert.show();
+            if(alert != null){
+                alert.show();
+            }
+
         });
     }
 
     @Subscribe
     public void checkingEvent(CheckingEvent event){
-        Dialog dialog = new Dialog();
-        dialog.setTitle("Did you finish this task?");
-        dialog.setHeaderText(event.getMessage().getData());
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.YES);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.NO);
-        Optional<ButtonType> result = dialog.showAndWait();
-        if(result.isPresent()){
-            if(result.get() == ButtonType.YES){
-                sendMessage("finish " + event.getMessage().getMessage().split(" ")[3] + " " + loggedInUser);
-            } else if(result.get() == ButtonType.NO){
-                dialog.close();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Dialog dialog = new Dialog();
+                dialog.setTitle("Did you finish this task?");
+                dialog.setHeaderText(event.getMessage().getData());
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.YES);
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.NO);
+                Optional<ButtonType> result = dialog.showAndWait();
+                if(result.isPresent()){
+                    if(result.get() == ButtonType.YES){
+                        sendMessage("finish " + event.getMessage().getMessage().split(" ")[3] + " " + loggedInUser + " prompt");
+                    } else if(result.get() == ButtonType.NO){
+                        dialog.close();
+                    }
+                }
             }
-        }
+        });
+
     }
 
 
