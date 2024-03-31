@@ -63,6 +63,11 @@ public class SecondaryController {
         SimpleChatClient.switchScreen("primary", idTF.getText());
     }
 
+    @Subscribe
+    public void mangerEvent(LoginEvent event)  {
+        SimpleChatClient.switchScreen("MangerPage", idTF.getText());
+    }
+
     @FXML
     void onEMG(ActionEvent event) {
         sendMessage("emergency");

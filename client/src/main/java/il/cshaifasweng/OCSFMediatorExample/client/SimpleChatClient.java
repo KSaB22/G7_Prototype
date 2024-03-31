@@ -60,7 +60,7 @@ public class SimpleChatClient extends Application {
         Platform.runLater(() ->
         {
             try {
-                setContent("primary", data);
+                setContent(name, data);
             }
             catch (IOException e) {
                 e.printStackTrace();

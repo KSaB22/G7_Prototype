@@ -128,10 +128,29 @@ public class SimpleServer extends AbstractServer {
         List<User> data = session.createQuery(query).getResultList();
         return data;
     }
+
+    protected static List<EmergencyCall> getEmergencyCalls() {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<EmergencyCall> query = builder.createQuery(EmergencyCall.class);
+        query.from(EmergencyCall.class);
+        List<EmergencyCall> data = session.createQuery(query).getResultList();
+        return data;
+    }
+
     protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks){
         ArrayList<Task> temp = new ArrayList<>();
         for (Task t : tasks) {
             if (t.getState() != 2 && t.getState() != -1) {
+                temp.add(t);
+            }
+        }
+        return temp;
+    }
+
+    protected static ArrayList<Task> getRequests(List<Task> tasks){
+        ArrayList<Task> temp = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getState() == 0) {
                 temp.add(t);
             }
         }
@@ -150,6 +169,7 @@ public class SimpleServer extends AbstractServer {
 
             List<Task> tasks = getTasks();
             List<User> users = getUsers();
+            List<EmergencyCall> emergencyCalls = getEmergencyCalls();
             ArrayList<Task> unfinishedTasks = getUnfinishedTasks(tasks);
             if (request.startsWith("pull tasks")) {
 
@@ -234,8 +254,14 @@ public class SimpleServer extends AbstractServer {
                 for (int i = 0; i < users.size(); i++) {
                     if (userid.equals(users.get(i).getId())) {
                         if (PasswordHashing.hashPassword(password, users.get(i).getSalt()).equals(users.get(i).getPassword())) {
-                            message.setMessage("account found");
-                            client.sendToClient(message);
+                            if(users.get(i).isManger()){
+                                message.setMessage("manger found");
+                                message.setData(userid);
+                                client.sendToClient(message);
+                            }else {
+                                message.setMessage("account found");
+                                client.sendToClient(message);
+                            }
                         } else {
                             message.setMessage("wrong password");
                             client.sendToClient(message);
@@ -277,7 +303,25 @@ public class SimpleServer extends AbstractServer {
                 message.setMessage("specific task");
                 message.setData(temp.toString());
                 client.sendToClient(message);
+            } else if (request.startsWith("pull requests")){
+                ArrayList<Task> requests = getRequests(tasks);
+                message.setData(stringForList(requests));
+                message.setMessage("list of tasks");
+                client.sendToClient(message);
+
+            } else if (request.startsWith("pull emergency")){
+                StringBuilder temp = new StringBuilder();
+                for (EmergencyCall e : emergencyCalls){
+                    temp.append(" Emergency call : ")
+                            .append(e.toString())
+                            .append(".");
+                }
+                message.setData(temp.toString()) ;
+                message.setMessage("list of tasks");
+                client.sendToClient(message);
             }
+
+
         } catch (Exception exception) {
             if (session != null) {
                 session.getTransaction().rollback();
@@ -317,5 +361,7 @@ public class SimpleServer extends AbstractServer {
         }
         return temp.toString();
     }
+
+
 
 }

@@ -32,6 +32,8 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new ErrorEvent(message));
 		} else if (message.getMessage().equals("emergency prompt")) {
 			EventBus.getDefault().post(new ErrorEvent(message));
+		} else if (message.getMessage().equals("manger found")) {
+			EventBus.getDefault().post(new MangerEvent(message));
 		}
 
 	}
