@@ -122,7 +122,7 @@ public class SimpleServer extends AbstractServer {
                 new User("985642133", "Roy Nissan", PasswordHashing.hashPassword("1234", temp[4]), temp[4], "Tel-aviv", false),
                 new User("789525642", "Bar Goldberg", PasswordHashing.hashPassword("1234", temp[5]), temp[5], "Tel-aviv", false)};
         Task[] tasks = new Task[]{
-                new Task(0, "fix my washer", LocalDateTime.of(2023, 12, 5, 8, 0), users[0], null),
+                new Task(-1, "fix my washer", LocalDateTime.of(2023, 12, 5, 8, 0), users[0], null),
                 new Task(0, "paint my house", LocalDateTime.of(2024, 2, 5, 8, 0), users[2], null),
                 new Task(0, "buy me some candy", LocalDateTime.of(2024, 1, 2, 9, 0), users[2], null),
                 new Task(0, "dogsit my dog", LocalDateTime.of(2023, 5, 2, 10, 0), users[4], null),
@@ -174,7 +174,7 @@ public class SimpleServer extends AbstractServer {
     protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks) {
         ArrayList<Task> temp = new ArrayList<>();
         for (Task t : tasks) {
-            if (t.getState() != 2 && t.getState() != -1) {
+            if (t.getState() != 2 && t.getState() != -1 && t.getState()!=-2) {
                 temp.add(t);
             }
         }
@@ -248,7 +248,7 @@ public class SimpleServer extends AbstractServer {
             } else if (request.startsWith("volunteer in")) {
                 int index = Integer.parseInt(request.split(" ")[2]);
                 String userid = request.split(" ")[3];
-                if (unfinishedTasks.get(index).getState() == 0) {
+                if (unfinishedTasks.get(index).getVolunteer() == null) {
 
                     for (int i = 0; i < users.size(); i++) {
                         if (userid.equals(users.get(i).getId())) {
@@ -412,14 +412,38 @@ public class SimpleServer extends AbstractServer {
 
             } else if (request.startsWith("pull emergency")) {
                 StringBuilder temp = new StringBuilder();
-                for (EmergencyCall e : emergencyCalls) {
-                    temp.append(" Emergency call : ")
-                            .append(e.toString())
-                            .append(".");
+                if(!request.endsWith("emergency"))
+                {
+                    String date = request.split(" ")[2];
+                    String y = date.split("//-")[0];
+                    String m = date.split("//-")[1];
+                    String d = date.split("//-")[2];
+                    for (EmergencyCall e : emergencyCalls){
+                        int year = e.getTime().getYear();
+                        int month = e.getTime().getMonthValue();
+                        int day = e.getTime().getDayOfMonth();
+
+                        if(Integer.parseInt(y)<year){
+                            temp.append(" Emergency call : ").append(e.toString()).append(".");
+                        }else if(Integer.parseInt(y)==year && Integer.parseInt(m)<month){
+                            temp.append(" Emergency call : ").append(e.toString()).append(".");
+                        }else if(Integer.parseInt(y)==year && Integer.parseInt(m)==month && Integer.parseInt(d)<=day) {
+                            temp.append(" Emergency call : ").append(e.toString()).append(".");
+                        }
+                    }
+                    message.setData(temp.toString());
+                    message.setMessage("list of tasks");
+                    client.sendToClient(message);
+                }else{
+                    for (EmergencyCall e : emergencyCalls) {
+                        temp.append(" Emergency call : ")
+                                .append(e.toString())
+                                .append(".");
+                    }
+                    message.setData(temp.toString());
+                    message.setMessage("list of tasks");
+                    client.sendToClient(message);
                 }
-                message.setData(temp.toString());
-                message.setMessage("list of tasks");
-                client.sendToClient(message);
             } else if (request.startsWith("pull users")){
                 StringBuilder temp = new StringBuilder();
                 String managerId = request.split(" ")[2];
@@ -433,6 +457,59 @@ public class SimpleServer extends AbstractServer {
                 message.setData(temp.toString()) ;
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
+
+            } else if (request.startsWith("accept task")) {
+                int index = Integer.parseInt(request.split(" ")[2]);
+                String managerId = request.split(" ")[3];
+                String community = getMangerCommunity(users,managerId);
+                ArrayList<Task> requests = getRequests(tasks,community);
+                String addvol = "UPDATE Task t SET t.state = 0 WHERE t.num = :whattask";
+                session.createQuery(addvol)
+                        .setInteger("whattask", requests.get(index).getNum())
+                        .executeUpdate();
+
+                session.flush();
+
+                requests.get(index).setState(0);
+
+                message.setData(stringForList(requests));
+                message.setMessage("list of tasks");
+                client.sendToClient(message);
+
+            } else if (request.startsWith("reject task")) {
+                int index = Integer.parseInt(request.split(" ")[2]);
+                String managerId = request.split(" ")[3];
+                String community = getMangerCommunity(users,managerId);
+                ArrayList<Task> requests = getRequests(tasks,community);
+                String userId = requests.get(index).getCreator().getId();
+                message.setData(userId);
+                message.setMessage("rejected user");
+                client.sendToClient(message);
+
+                String addvol = "UPDATE Task t SET t.state = -2 WHERE t.num = :whattask";
+                session.createQuery(addvol)
+                        .setInteger("whattask", requests.get(index).getNum())
+                        .executeUpdate();
+
+                session.flush();
+
+                requests.get(index).setState(-2);
+
+                message.setData(stringForList(requests));
+                message.setMessage("list of tasks");
+                client.sendToClient(message);
+
+            } else if (request.startsWith("report")){
+                String userId = request.split(" ")[1];
+                String report = request.split(" ")[2];
+                for (User u : users){
+                    if(u.getId().equals(userId))
+                    {
+                        message.setData(report);
+                        message.setMessage("report to user");
+                        client.sendToClient(message);
+                    }
+                }
 
             }
 
@@ -468,6 +545,8 @@ public class SimpleServer extends AbstractServer {
                 temp.append("Status: Pre-execution");
             } else if (t.getState() == -1){
                 temp.append("Status: Awaiting approval");
+            } else if (t.getState() == -2){
+                temp.append("Status: Rejected");
             } else {
                 temp.append("Status: Done");
             }

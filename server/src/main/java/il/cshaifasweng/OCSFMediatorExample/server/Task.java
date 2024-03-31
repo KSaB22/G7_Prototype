@@ -76,9 +76,11 @@ public class Task {
     @Override
     public String toString() {
         StringBuilder taskdata  = new StringBuilder();
-        if(state == -1){
-          taskdata.append("Status: Awaiting approval");
-        } else if(state == 0){
+        if(state == -2){
+          taskdata.append("Status: Rejected");
+        } else if (state ==-1) {
+            taskdata.append("Status: Awaiting approval");
+        }else if(state == 0){
             taskdata.append("Status: Request");
         } else if (state == 1) {
             taskdata.append("Status: Pre-execution");

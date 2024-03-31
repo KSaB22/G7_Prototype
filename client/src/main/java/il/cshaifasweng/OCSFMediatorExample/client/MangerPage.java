@@ -10,10 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.EventBus;
 
@@ -24,11 +21,14 @@ public class MangerPage {
     @FXML // fx:id="accBtn"
     private Button accBtn; // Value injected by FXMLLoader
 
+    @FXML // fx:id="dateEmgBtn"
+    private DatePicker dateEmgBtn; // Value injected by FXMLLoader
+
     @FXML // fx:id="lst"
     private ListView<String> lst; // Value injected by FXMLLoader
 
-    @FXML // fx:id="messagesBtn"
-    private Button messagesBtn; // Value injected by FXMLLoader
+    @FXML // fx:id="showTaskBtn"
+    private Button showTaskBtn; // Value injected by FXMLLoader
 
     @FXML // fx:id="rejBtn"
     private Button rejBtn; // Value injected by FXMLLoader
@@ -56,6 +56,15 @@ public class MangerPage {
 
     private String loggedInUser;
     private int currentTask = -1;
+    private String rejectedUser;
+
+    @Subscribe
+    public void givenTaskEvent(GivenTaskEvent event) {
+        txtBox.setText(event.getMessage().getData());
+    }
+
+    @Subscribe
+    public void RejectEvent(RejectEvent event){rejectedUser = event.getMessage().getData();}
 
     @Subscribe
     public void errorEvent(ErrorEvent event){
@@ -85,22 +94,44 @@ public class MangerPage {
 
 
     @FXML
-    void onAccept(ActionEvent event) {//todo : accept request
-
+    void onAccept(ActionEvent event) {
+        if (currentTask != -1) {
+            sendMessage("accept task " + currentTask + " " +loggedInUser);
+            accBtn.setVisible(false);
+        } else {
+            txtBox.setText("please select a task");
+        }
     }
 
     @FXML
-    void onEMG(ActionEvent event) {
-        sendMessage("emergency " + loggedInUser);
+    void onDateEmg(ActionEvent event) {
+        String date = dateEmgBtn.getValue().toString();
+        sendMessage("pull emergency " + date);
+        dateEmgBtn.setVisible(false);
     }
 
     @FXML
-    void onMessages(ActionEvent event) {//todo : show messages from users
+    void onEMG(ActionEvent event) {sendMessage("emergency " + loggedInUser);}
 
+    @FXML
+    void onShowTask(ActionEvent event) {
+        if (currentTask != -1) {
+            sendMessage("give task " + currentTask);
+        } else {
+            txtBox.setText("please select a task");
+        }
     }
 
     @FXML
     void onReject(ActionEvent event) {//todo : reject request
+        if (currentTask != -1) {
+            txtBox.setText("Please report back to user");
+            txtBox.clear();
+            sendMessage("reject task " + currentTask + " " +loggedInUser);
+            rejBtn.setVisible(false);
+        } else {
+            txtBox.setText("please select a task");
+        }
 
     }
 
@@ -109,16 +140,16 @@ public class MangerPage {
         rejBtn.setVisible(true);
         accBtn.setVisible(true);
         sendMessage("pull requests");
-        if(currentTask != -1){
-            txtBox.setText("requests box is empty");
-        } else {
-            txtBox.setText("please select a task");
-        }
-
+        txtBox.setText("please select a task");
     }
 
     @FXML
-    void onSend(ActionEvent event) {//todo : send report when manger rejects a request
+    void onSend(ActionEvent event) {
+        String report = txtBox.getText();
+        if(!(rejectedUser.isEmpty())){
+            sendMessage("report " +rejectedUser + " "+report);
+        }
+
 
     }
 
@@ -129,6 +160,7 @@ public class MangerPage {
 
     @FXML
     void showEmgCall(ActionEvent event) {
+        dateEmgBtn.setVisible(true);
         sendMessage("pull emergency");
     }
     @FXML
