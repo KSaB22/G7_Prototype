@@ -148,6 +148,7 @@ public class MangerPage {
         String report = txtBox.getText();
         if(!(rejectedUser.isEmpty())){
             sendMessage("report " +rejectedUser + " "+report);
+            rejectedUser = null;
         }
 
 
