@@ -88,6 +88,10 @@ public class MangerPage {
     void onAccept(ActionEvent event) {//todo : accept request
 
     }
+    @FXML
+    void onReject(ActionEvent event) {//todo : reject request
+
+    }
 
     @FXML
     void onEMG(ActionEvent event) {
@@ -99,15 +103,11 @@ public class MangerPage {
         disableRequestBtns();
     }
 
-    @FXML
-    void onReject(ActionEvent event) {//todo : reject request
-
-    }
 
     @FXML
     void onRequests(ActionEvent event) {
         enableRequestBtns();
-        sendMessage("pull requests");
+        sendMessage("pull requests " + loggedInUser);
         if(currentTask != -1){
             txtBox.setText("requests box is empty");
         } else {
@@ -131,7 +131,7 @@ public class MangerPage {
 
     @FXML
     void onSend(ActionEvent event) {//todo : send report when manger rejects a request
-
+        
     }
 
     @FXML
