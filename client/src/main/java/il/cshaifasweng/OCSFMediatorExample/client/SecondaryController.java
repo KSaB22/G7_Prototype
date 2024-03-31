@@ -64,7 +64,7 @@ public class SecondaryController {
     }
 
     @Subscribe
-    public void mangerEvent(LoginEvent event)  {
+    public void mangerEvent(MangerEvent event)  {
         SimpleChatClient.switchScreen("MangerPage", idTF.getText());
     }
 

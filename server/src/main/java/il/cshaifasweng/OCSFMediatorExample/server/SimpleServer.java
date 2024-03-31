@@ -255,7 +255,7 @@ public class SimpleServer extends AbstractServer {
                     if (userid.equals(users.get(i).getId())) {
                         if (PasswordHashing.hashPassword(password, users.get(i).getSalt()).equals(users.get(i).getPassword())) {
                             if(users.get(i).isManger()){
-                                message.setMessage("manger found");
+                                message.setMessage("manager found");
                                 message.setData(userid);
                                 client.sendToClient(message);
                             }else {
