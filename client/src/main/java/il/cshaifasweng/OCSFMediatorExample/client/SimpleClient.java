@@ -34,6 +34,8 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new ErrorEvent(message));
 		} else if (message.getMessage().equals("manager found")) {
 			EventBus.getDefault().post(new MangerEvent(message));
+		} else if(message.getMessage().startsWith("check for update")){
+			EventBus.getDefault().post(new CheckingEvent(message));
 		}
 
 	}
