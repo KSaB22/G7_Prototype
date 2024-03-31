@@ -142,7 +142,6 @@ public class PrimaryController {
             Message message = new Message(SecondaryController.msgId, "add client");
             SimpleClient.getClient().sendToServer(message);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -157,7 +156,6 @@ public class PrimaryController {
             Message message = new Message(SecondaryController.msgId++, messagetype);
             SimpleClient.getClient().sendToServer(message);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
