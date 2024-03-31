@@ -96,7 +96,7 @@ public class MangerPage {
 
     @FXML
     void onMessages(ActionEvent event) {//todo : show messages from users
-
+        disableRequestBtns();
     }
 
     @FXML
@@ -106,8 +106,7 @@ public class MangerPage {
 
     @FXML
     void onRequests(ActionEvent event) {
-        rejBtn.setVisible(true);
-        accBtn.setVisible(true);
+        enableRequestBtns();
         sendMessage("pull requests");
         if(currentTask != -1){
             txtBox.setText("requests box is empty");
@@ -117,6 +116,19 @@ public class MangerPage {
 
     }
 
+    void enableRequestBtns() {
+        rejBtn.setVisible(true);
+        accBtn.setVisible(true);
+        rejBtn.setDisable(false);
+        accBtn.setDisable(false);
+    }
+    void disableRequestBtns() {
+        rejBtn.setVisible(false);
+        accBtn.setVisible(false);
+        rejBtn.setDisable(true);
+        accBtn.setDisable(true);
+    }
+
     @FXML
     void onSend(ActionEvent event) {//todo : send report when manger rejects a request
 
@@ -124,15 +136,18 @@ public class MangerPage {
 
     @FXML
     void onTaskList(ActionEvent event) {//show ongoing tasks
+        disableRequestBtns();
         sendMessage("pull tasks "+ loggedInUser);
     }
 
     @FXML
     void showEmgCall(ActionEvent event) {
+        disableRequestBtns();
         sendMessage("pull emergency");
     }
     @FXML
     void onUsers(ActionEvent event) {
+        disableRequestBtns();
         sendMessage("pull users " + loggedInUser);
 
     }

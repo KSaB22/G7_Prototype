@@ -31,8 +31,8 @@
             <Button fx:id="taskListBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onTaskList" prefHeight="30.0" prefWidth="173.0" text="Task List" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <Button fx:id="messagesBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onMessages" prefHeight="30.0" prefWidth="184.0" text="Messages" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Button fx:id="reqBtn" mnemonicParsing="false" onAction="#onRequests" prefHeight="47.0" prefWidth="172.0" text="Requests" GridPane.columnIndex="1" />
-            <Button fx:id="accBtn" mnemonicParsing="false" onAction="#onAccept" prefHeight="39.0" prefWidth="53.0" text="Accept" visible="false" />
-            <Button fx:id="rejBtn" mnemonicParsing="false" onAction="#onReject" prefHeight="39.0" prefWidth="53.0" text="Reject" visible="false" GridPane.columnIndex="2" />
+            <Button fx:id="accBtn" disable="true" mnemonicParsing="false" onAction="#onAccept" prefHeight="39.0" prefWidth="53.0" text="Accept" visible="false" />
+            <Button fx:id="rejBtn" disable="true" mnemonicParsing="false" onAction="#onReject" prefHeight="39.0" prefWidth="53.0" text="Reject" visible="false" GridPane.columnIndex="2" />
             <Button fx:id="usersBtn" mnemonicParsing="false" onAction="#onUsers" prefHeight="57.0" prefWidth="172.0" text="Users" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          </children>
       </GridPane>
