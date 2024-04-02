@@ -36,6 +36,10 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new MangerEvent(message));
 		} else if(message.getMessage().startsWith("check for update")){
 			EventBus.getDefault().post(new CheckingEvent(message));
+		} else if (message.getMessage().startsWith("task not found")) {
+			EventBus.getDefault().post(new ErrorEvent(message));
+		} else if (message.getMessage().startsWith("request rejected")) {
+			System.out.println(message.getMessage());
 		}
 
 	}
