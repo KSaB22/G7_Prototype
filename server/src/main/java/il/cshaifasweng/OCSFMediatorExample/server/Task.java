@@ -10,7 +10,7 @@ public class Task {
     @Id
     @GeneratedValue (strategy =  GenerationType.IDENTITY)
     private int num;
-    private int state;// state -1 = new;  0 = approved; 1 = volunteered; 2 = done
+    private int state;// state -2 = rejected; -1 = new;  0 = approved; 1 = volunteered; 2 = done;
     private String info;
     private LocalDateTime created;
     @ManyToOne
@@ -82,9 +82,12 @@ public class Task {
             taskdata.append("Status: Request");
         } else if (state == 1) {
             taskdata.append("Status: Pre-execution");
-        } else {
+        } else if (state == 2) {
             taskdata.append("Status: Done");
-        }
+        } else if (state == -2) {
+            taskdata.append("Status: Rejected");
+        } else
+            taskdata.append("Status: Invalid Status");
         taskdata.append("\nTask: ")
                 .append(info);
         taskdata.append("\nCreated by: ")

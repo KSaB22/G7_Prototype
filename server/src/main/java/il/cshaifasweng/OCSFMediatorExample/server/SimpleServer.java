@@ -15,6 +15,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import javax.persistence.MappedSuperclass;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.File;
@@ -96,6 +97,7 @@ public class SimpleServer extends AbstractServer {
         configuration.addAnnotatedClass(Task.class);
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(EmergencyCall.class);
+        configuration.addAnnotatedClass(MngUsrMsg.class);
 
         ServiceRegistry serviceRegistry = new
                 StandardServiceRegistryBuilder()
@@ -126,11 +128,15 @@ public class SimpleServer extends AbstractServer {
                 new Task(0, "paint my house", LocalDateTime.of(2024, 2, 5, 8, 0), users[2], null),
                 new Task(0, "buy me some candy", LocalDateTime.of(2024, 1, 2, 9, 0), users[2], null),
                 new Task(0, "dogsit my dog", LocalDateTime.of(2023, 5, 2, 10, 0), users[4], null),
-                new Task(0, "come talk to me", LocalDateTime.of(2023, 11, 2, 9, 0), users[5], null)
+                new Task(0, "come talk to me", LocalDateTime.of(2023, 11, 2, 9, 0), users[5], null),
+                new Task(-1, "help me fix my turtle's heart rate reader", LocalDateTime.of(2023, 05, 14, 9, 0), users[0], null)
         };
         EmergencyCall[] emergencyCalls = new EmergencyCall[]{
                 new EmergencyCall(users[1]),
                 new EmergencyCall(users[4])
+        };
+        MngUsrMsg[] mngUserMessages = new MngUsrMsg[]{
+                new MngUsrMsg("Test message", "Some description", users[1], users[0])
         };
         for (User u : users) {
             session.save(u);
@@ -144,8 +150,14 @@ public class SimpleServer extends AbstractServer {
             session.save(ec);
             session.flush();
         }
+        for (MngUsrMsg msg : mngUserMessages) {
+            session.save(msg);
+            session.flush();
+        }
         session.getTransaction().commit();
     }
+
+    // DATABASE FUNCTIONS
 
     protected static List<Task> getTasks() {
         CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -174,7 +186,7 @@ public class SimpleServer extends AbstractServer {
     protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks) {
         ArrayList<Task> temp = new ArrayList<>();
         for (Task t : tasks) {
-            if (t.getState() != 2 && t.getState() != -1) {
+            if (t.getState() == 1 || t.getState() == 0) {
                 temp.add(t);
             }
         }
@@ -203,6 +215,16 @@ public class SimpleServer extends AbstractServer {
         return com;
     }
 
+    protected static Task getTaskById(int taskId) {
+        return session.get(Task.class, taskId);
+    }
+
+    protected static User getUserById(String userId) {
+        return session.get(User.class, userId);
+    }
+
+
+    // CLIENT MESSAGE HANDLING
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -233,7 +255,14 @@ public class SimpleServer extends AbstractServer {
                             unfinishedTaskCom.add(unfinishedTasks.get(j));
                         }
                     }
+                    // System.out.println("manager " + managerId);
+                    // System.out.println("community " + com);
+                    // System.out.println("unfinishedtasks: " + unfinishedTasks);
+                    // System.out.println("tasks: " + tasks);
+                    // System.out.println("unfinished tasks in community: " + unfinishedTaskCom);
+                    // System.out.println("unfinished tasks in community string: " + stringForList(unfinishedTaskCom));
                     message.setData(stringForList(unfinishedTaskCom));
+                    message.setLst(getTaskIdsLst(unfinishedTaskCom));
                     message.setMessage("list of tasks");
                     client.sendToClient(message);
                 }
@@ -243,6 +272,17 @@ public class SimpleServer extends AbstractServer {
                     message.setData(tasks.get(index).toString());
                 else
                     message.setData(unfinishedTasks.get(index).toString());
+                message.setMessage("specific task");
+                client.sendToClient(message);
+            } else if (request.startsWith("get task by id")) {
+                int taskNum = Integer.parseInt(message.getData());
+                Task task = getTaskById(taskNum);
+                if (task == null) {
+                    message.setMessage("task not found");
+                    client.sendToClient(message);
+                    return;
+                }
+                message.setData(task.toString());
                 message.setMessage("specific task");
                 client.sendToClient(message);
             } else if (request.startsWith("volunteer in")) {
@@ -405,7 +445,7 @@ public class SimpleServer extends AbstractServer {
                 String managerId = request.split(" ")[2];
                 String community = getMangerCommunity(users,managerId);
                 ArrayList<Task> requests = getRequests(tasks,community);
-
+                message.setLst(getTaskIdsLst(requests));
                 message.setData(stringForList(requests));
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
@@ -434,6 +474,49 @@ public class SimpleServer extends AbstractServer {
                 message.setMessage("list of tasks");
                 client.sendToClient(message);
 
+            } else if (request.startsWith("accept task ")) {
+                String taskId = request.split(" ")[2];
+                Task task = getTaskById(Integer.parseInt(taskId));
+                if (task == null) {
+                    message.setMessage("task not found");
+                    message.setData(taskId);
+                    client.sendToClient(message);
+                    return;
+                }
+                // Accept task
+                task.setState(0);
+                session.update(task);
+                session.flush();
+                session.getTransaction().commit();
+                client.sendToClient(new Message(0, "Request accepted"));
+            } else if (request.startsWith("reject task ")) {
+                // Message format: "reject task {taskNum} {managerId}"
+                String managerId = request.split(" ")[3];
+                String taskId = request.split(" ")[2];
+                Task task = getTaskById(Integer.parseInt(taskId));
+                if (task == null) {
+                    message.setMessage("task not found");
+                    message.setData(taskId);
+                    client.sendToClient(message);
+                    return;
+                }
+                // Reject task
+                task.setState(-2);
+                session.update(task);
+                session.flush();
+                // System.out.println(managerId + taskId + task);
+                // Send message to requester that their request was rejected
+                String title = "Task rejected: \"" +task.getInfo() + "\" (num: " + taskId + ")";
+                String description = "Reason: " + message.getData();
+                User fromUser = getUserById(managerId);
+                User toUser = task.getCreator();
+                MngUsrMsg mngUsrMsg = new MngUsrMsg(title, description, fromUser, toUser);
+                session.save(mngUsrMsg);
+                session.flush();
+                session.getTransaction().commit();
+                client.sendToClient(new Message(0, "request rejected (num: "+taskId+")"));
+            } else {
+                // DEFAULT BEHAVIOR
             }
 
 
@@ -459,6 +542,8 @@ public class SimpleServer extends AbstractServer {
         }
     }
 
+    // HELPER-FUNCTIONS
+
     private static String stringForList(List<Task> tasks) {
         StringBuilder temp = new StringBuilder();
         for (Task t : tasks) {    //each task look like "Status: 0-2 Task: bla" the . is there to separate for the list
@@ -479,5 +564,11 @@ public class SimpleServer extends AbstractServer {
         return temp.toString();
     }
 
-
+    private ArrayList<Integer> getTaskIdsLst(ArrayList<Task> tasks) {
+        ArrayList<Integer> lst = new ArrayList<>();
+        for(Task task: tasks) {
+            lst.add(task.getNum());
+        }
+        return lst;
+    }
 }
