@@ -68,19 +68,15 @@ public class MangerPage {
     @Subscribe
     public void errorEvent(ErrorEvent event){
         Platform.runLater(() -> {
-            Alert alert;
+            Alert alert = null;
             if(event.getMessage().getMessage().equals("emergency prompt")){
                 alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
                 alert.setTitle("Emergency recorded");
                 alert.setHeaderText("Emergency");
             }
-            else {//remember to delete
-                alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
-                alert.setTitle("Error!");
-                alert.setHeaderText("Error:");
-            }
 
-            alert.show();
+            if(alert != null)
+                alert.show();
         });
     }
 
@@ -105,7 +101,7 @@ public class MangerPage {
     void onCommunity(ActionEvent event) {
         if (communityBtn.isSelected())
         {
-            if(dateBtn.getValue().toString().isEmpty()) {
+            if(dateBtn.getValue() == null) {
                 resetLst();
                 disableRequestBtns();
                 sendMessage("pull emergency " + loggedInUser+ " community");
@@ -118,8 +114,6 @@ public class MangerPage {
                 sendMessage("pull emergency " + date +" "+ loggedInUser);
             }
         }
-        communityBtn.setVisible(false);
-
     }
 
 
@@ -139,8 +133,6 @@ public class MangerPage {
             disableRequestBtns();
             sendMessage("pull emergency " + date + " date");
         }
-        dateBtn.setVisible(false);
-
     }
 
     @FXML
