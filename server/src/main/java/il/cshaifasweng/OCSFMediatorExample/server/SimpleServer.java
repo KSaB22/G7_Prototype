@@ -35,6 +35,7 @@ public class SimpleServer extends AbstractServer {
 
     private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
     private static ArrayList<SubscribedClient> activeVolenteers = new ArrayList<>();
+
     private static ArrayList<Task> awaitingEnd = new ArrayList<>();
 
     private static HashMap<String, SubscribedClient> activeUsers = new HashMap<>();
@@ -459,10 +460,23 @@ public class SimpleServer extends AbstractServer {
 
             } else if (request.startsWith("pull emergency")) {
                 StringBuilder temp = new StringBuilder();
-                for (EmergencyCall e : emergencyCalls) {
-                    temp.append(" Emergency call : ")
-                            .append(e.toString())
-                            .append(".");
+                if(request.endsWith("emergency")) {
+                    for (EmergencyCall e : emergencyCalls) {
+                        temp.append(" Emergency call : ")
+                                .append(e.toString())
+                                .append(".");
+                    }
+                }
+                else{
+                    String managerId = request.split(" ")[2];
+                    String com = getMangerCommunity(users,managerId);
+                    for (EmergencyCall e : emergencyCalls) {
+                        if (e.getCreator().getCommunity().equals(com)) {
+                            temp.append(" Emergency call : ")
+                                    .append(e.toString())
+                                    .append(".");
+                        }
+                    }
                 }
                 message.setData(temp.toString());
                 message.setMessage("list of tasks");

@@ -34,6 +34,9 @@ public class MangerPage {
     @FXML // fx:id="reqBtn"
     private Button reqBtn; // Value injected by FXMLLoader
 
+    @FXML // fx:id="communityBtn"
+    private CheckBox communityBtn; // Value injected by FXMLLoader
+
 
     @FXML // fx:id="showBtn"
     private Button showBtn; // Value injected by FXMLLoader
@@ -95,6 +98,18 @@ public class MangerPage {
     // JAVAFX EVENT HANDLERS
 
     @FXML
+    void onCommunity(ActionEvent event) {
+        if (communityBtn.isSelected())
+        {
+            resetLst();
+            disableRequestBtns();
+            sendMessage("pull emergency " + loggedInUser);
+        }
+        communityBtn.setVisible(false);
+
+    }
+
+    @FXML
     void onAccept(ActionEvent event) {
         if(currentTask != -1) {
             sendMessage("accept task " + getSelectedTaskId());
@@ -121,6 +136,7 @@ public class MangerPage {
 
     @FXML
     void onRequests(ActionEvent event) {
+        communityBtn.setVisible(false);
         resetLst();
         enableRequestBtns();
         sendMessage("pull requests " + loggedInUser);
@@ -156,6 +172,7 @@ public class MangerPage {
 
     @FXML
     void onTaskList(ActionEvent event) {//show ongoing tasks
+        communityBtn.setVisible(false);
         resetLst();
         disableRequestBtns();
         sendMessage("pull tasks "+ loggedInUser);
@@ -163,6 +180,7 @@ public class MangerPage {
 
     @FXML
     void showEmgCall(ActionEvent event) {
+        communityBtn.setVisible(true);
         resetLst();
         disableRequestBtns();
         sendMessage("pull emergency");
