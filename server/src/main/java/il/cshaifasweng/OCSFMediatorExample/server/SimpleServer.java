@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -467,7 +468,7 @@ public class SimpleServer extends AbstractServer {
                                 .append(".");
                     }
                 }
-                else{
+                else if (request.endsWith("community")){
                     String managerId = request.split(" ")[2];
                     String com = getMangerCommunity(users,managerId);
                     for (EmergencyCall e : emergencyCalls) {
@@ -477,6 +478,39 @@ public class SimpleServer extends AbstractServer {
                                     .append(".");
                         }
                     }
+                }
+                else if (request.endsWith("date")){
+                    String date = request.split(" ")[2];
+                    LocalDateTime dateUser = LocalDateTime.parse(date);
+                    for (EmergencyCall e: emergencyCalls)
+                    {
+                        LocalDateTime dateEmg = e.getTime();
+                        if(dateEmg.isAfter(dateUser))
+                        {
+                            temp.append(" Emergency call : ")
+                                    .append(e.toString())
+                                    .append(".");
+                        }
+
+
+                    }
+                }
+                else{
+                    String date = request.split(" ")[2];
+                    LocalDateTime dateUser = LocalDateTime.parse(date);
+                    String managerId = request.split(" ")[3];
+                    String com = getMangerCommunity(users,managerId);
+                    for (EmergencyCall e : emergencyCalls) {
+                        LocalDateTime dateEmg = e.getTime();
+                        if(dateEmg.isAfter(dateUser) && (e.getCreator().getCommunity().equals(com)))
+                        {
+                            temp.append(" Emergency call : ")
+                                    .append(e.toString())
+                                    .append(".");
+                        }
+
+                    }
+
                 }
                 message.setData(temp.toString());
                 message.setMessage("list of tasks");

@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 public class MangerPage {
@@ -49,6 +50,9 @@ public class MangerPage {
 
     @FXML // fx:id="taskListBtn"
     private Button taskListBtn; // Value injected by FXMLLoader
+
+    @FXML // fx:id="dateBtn"
+    private DatePicker dateBtn; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtBox"
     private TextArea txtBox; // Value injected by FXMLLoader
@@ -101,11 +105,41 @@ public class MangerPage {
     void onCommunity(ActionEvent event) {
         if (communityBtn.isSelected())
         {
-            resetLst();
-            disableRequestBtns();
-            sendMessage("pull emergency " + loggedInUser);
+            if(dateBtn.getValue().toString().isEmpty()) {
+                resetLst();
+                disableRequestBtns();
+                sendMessage("pull emergency " + loggedInUser+ " community");
+            }
+            else{
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
+                String date = dateBtn.getValue().format(formatter);
+                resetLst();
+                disableRequestBtns();
+                sendMessage("pull emergency " + date +" "+ loggedInUser);
+            }
         }
         communityBtn.setVisible(false);
+
+    }
+
+
+    @FXML
+    void onDate(ActionEvent event) {
+        if(communityBtn.isSelected())
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
+            String date = dateBtn.getValue().format(formatter);
+            resetLst();
+            disableRequestBtns();
+            sendMessage("pull emergency " + date +" "+ loggedInUser);
+        }
+        else {
+            String date = dateBtn.getValue().toString();
+            resetLst();
+            disableRequestBtns();
+            sendMessage("pull emergency " + date + " date");
+        }
+        dateBtn.setVisible(false);
 
     }
 
@@ -125,12 +159,6 @@ public class MangerPage {
     @FXML
     void onEMG(ActionEvent event) {
         sendMessage("emergency " + loggedInUser);
-    }
-
-    @FXML
-    void onMessages(ActionEvent event) {//todo : show messages from users
-        resetLst();
-        disableRequestBtns();
     }
 
 
@@ -163,13 +191,6 @@ public class MangerPage {
     }
 
 
-
-
-    @FXML
-    void onSend(ActionEvent event) {//todo : send report when manger rejects a request
-
-    }
-
     @FXML
     void onTaskList(ActionEvent event) {//show ongoing tasks
         communityBtn.setVisible(false);
@@ -181,6 +202,7 @@ public class MangerPage {
     @FXML
     void showEmgCall(ActionEvent event) {
         communityBtn.setVisible(true);
+        dateBtn.setVisible(true);
         resetLst();
         disableRequestBtns();
         sendMessage("pull emergency");
