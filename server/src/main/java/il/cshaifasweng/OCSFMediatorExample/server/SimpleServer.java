@@ -7,6 +7,7 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.Node;
 import javafx.util.Duration;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -35,6 +36,8 @@ public class SimpleServer extends AbstractServer {
     private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
     private static ArrayList<SubscribedClient> activeVolenteers = new ArrayList<>();
     private static ArrayList<Task> awaitingEnd = new ArrayList<>();
+
+    private static HashMap<String, SubscribedClient> activeUsers = new HashMap<>();
 
     private static Session session;
 
@@ -129,7 +132,7 @@ public class SimpleServer extends AbstractServer {
                 new Task(0, "buy me some candy", LocalDateTime.of(2024, 1, 2, 9, 0), users[2], null),
                 new Task(0, "dogsit my dog", LocalDateTime.of(2023, 5, 2, 10, 0), users[4], null),
                 new Task(0, "come talk to me", LocalDateTime.of(2023, 11, 2, 9, 0), users[5], null),
-                new Task(-1, "help me fix my turtle's heart rate reader", LocalDateTime.of(2023, 05, 14, 9, 0), users[0], null)
+                new Task(-1, "help me fix my turtle's heart rate reader", LocalDateTime.of(2023, 5, 14, 9, 0), users[0], null)
         };
         EmergencyCall[] emergencyCalls = new EmergencyCall[]{
                 new EmergencyCall(users[1]),
@@ -438,6 +441,10 @@ public class SimpleServer extends AbstractServer {
                         break;
                     }
                 }
+
+                SubscribedClient connection = new SubscribedClient(client);
+                activeUsers.put(userid,connection);
+
                 message.setMessage("specific task");
                 message.setData(temp.toString());
                 client.sendToClient(message);
@@ -510,11 +517,16 @@ public class SimpleServer extends AbstractServer {
                 String description = "Reason: " + message.getData();
                 User fromUser = getUserById(managerId);
                 User toUser = task.getCreator();
-                MngUsrMsg mngUsrMsg = new MngUsrMsg(title, description, fromUser, toUser);
-                session.save(mngUsrMsg);
-                session.flush();
-                session.getTransaction().commit();
-                client.sendToClient(new Message(0, "request rejected (num: "+taskId+")"));
+                if(activeUsers.get(toUser.getId()) != null){
+                    message.setMessage("request rejected");
+                    message.setData(description);
+                    activeUsers.get(toUser.getId()).getClient().sendToClient(message);
+                }
+//                MngUsrMsg mngUsrMsg = new MngUsrMsg(title, description, fromUser, toUser);
+//                session.save(mngUsrMsg);
+//                session.flush();
+//                session.getTransaction().commit();
+//                client.sendToClient(new Message(0, "request rejected (num: "+taskId+")"));
             } else {
                 // DEFAULT BEHAVIOR
             }

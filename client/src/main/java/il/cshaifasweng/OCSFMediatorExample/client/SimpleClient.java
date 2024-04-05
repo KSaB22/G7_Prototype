@@ -39,7 +39,7 @@ public class SimpleClient extends AbstractClient {
 		} else if (message.getMessage().startsWith("task not found")) {
 			EventBus.getDefault().post(new ErrorEvent(message));
 		} else if (message.getMessage().startsWith("request rejected")) {
-			System.out.println(message.getMessage());
+			EventBus.getDefault().post((new ErrorEvent(message)));
 		}
 
 	}

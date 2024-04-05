@@ -74,6 +74,10 @@ public class PrimaryController {
                 alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
                 alert.setTitle("Error!");
                 alert.setHeaderText("Error:");
+            } else if(event.getMessage().getMessage().equals("request rejected")){
+                alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
+                alert.setTitle("Task rejected");
+                alert.setHeaderText("Your task has been rejected");
             }
 
             if(alert != null){

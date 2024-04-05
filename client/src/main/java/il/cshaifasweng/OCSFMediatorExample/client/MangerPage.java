@@ -27,8 +27,6 @@ public class MangerPage {
     @FXML // fx:id="lst"
     private ListView<String> lst; // Value injected by FXMLLoader
 
-    @FXML // fx:id="messagesBtn"
-    private Button messagesBtn; // Value injected by FXMLLoader
 
     @FXML // fx:id="rejBtn"
     private Button rejBtn; // Value injected by FXMLLoader
@@ -36,8 +34,6 @@ public class MangerPage {
     @FXML // fx:id="reqBtn"
     private Button reqBtn; // Value injected by FXMLLoader
 
-    @FXML // fx:id="sendBtn"
-    private Button sendBtn; // Value injected by FXMLLoader
 
     @FXML // fx:id="showBtn"
     private Button showBtn; // Value injected by FXMLLoader
