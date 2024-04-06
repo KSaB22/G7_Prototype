@@ -56,25 +56,31 @@ public class PrimaryController {
 
 
     @Subscribe
-    @FXML
     public void msgListEvent(MessagesListEvent event) {
-        List<String> msgs = List.of(event.getMessage().getData().split("\\|"));
-        lst.getItems().clear();
-        lst.getItems().addAll(msgs);
-        System.out.println(event.getMessage());
-        System.out.println(msgs);
+        Platform.runLater(() -> {
+            List<String> msgs = List.of(event.getMessage().getData().split("\\|"));
+            lst.getItems().clear();
+            lst.getItems().addAll(msgs);
+            System.out.println(event.getMessage());
+            System.out.println(msgs);
+        });
     }
 
     @Subscribe
     public void givenTaskEvent(GivenTaskEvent event) {
-        txtBox.setText(event.getMessage().getData());
+        Platform.runLater(() -> {
+            txtBox.setText(event.getMessage().getData());
+        });
     }
 
     @Subscribe
     public void taskMessageEvent(TaskMessageEvent event) {
-        List<String> tasks = List.of(event.getMessage().getData().split("\\."));
-        lst.getItems().clear();
-        lst.getItems().addAll(tasks);
+        Platform.runLater(() -> {
+            List<String> tasks = List.of(event.getMessage().getData().split("\\."));
+            lst.getItems().clear();
+            lst.getItems().addAll(tasks);
+        });
+
     }
 
     @Subscribe
@@ -122,7 +128,6 @@ public class PrimaryController {
                 }
             }
         });
-
     }
 
     @FXML
