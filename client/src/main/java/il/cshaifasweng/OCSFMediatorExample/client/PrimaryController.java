@@ -56,6 +56,7 @@ public class PrimaryController {
 
 
     @Subscribe
+    @FXML
     public void msgListEvent(MessagesListEvent event) {
         List<String> msgs = List.of(event.getMessage().getData().split("\\|"));
         lst.getItems().clear();
@@ -126,12 +127,13 @@ public class PrimaryController {
 
     @FXML
     void onShowTasks(ActionEvent event) {
-        System.out.println("SHOW TASKS CLICKED");
+        // System.out.println("SHOW TASKS CLICKED");
+        sendMessage("pull tasks");
     }
 
     @FXML
     void onMessages(ActionEvent event) {
-        System.out.println("MESSAGES CLICKED");
+        // System.out.println("MESSAGES CLICKED");
         sendMessage("get messages " + loggedInUser);
     }
 
