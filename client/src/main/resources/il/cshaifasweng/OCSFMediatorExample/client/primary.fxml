@@ -28,10 +28,12 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="showBtn" alignment="CENTER" mnemonicParsing="false" onAction="#showTask" prefHeight="40.0" prefWidth="115.0" text="Show selected" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="showBtn" alignment="CENTER" mnemonicParsing="false" onAction="#showTask" prefHeight="40.0" prefWidth="115.0" text="Show selected" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Button fx:id="volunteerBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onVolunteer" prefHeight="40.0" prefWidth="115.0" text="Volunteer" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <Button fx:id="finishBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onEndRequest" prefHeight="40.0" prefWidth="115.0" text="Finish&#10;volunteering" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Button fx:id="taskBtn" mnemonicParsing="false" onAction="#onNewTask" prefHeight="40.0" prefWidth="115.0" text="Create a task" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <Button fx:id="showTasksBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onShowTasks" prefHeight="40.0" prefWidth="115.0" text="Tasks" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="msgsBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onMessages" prefHeight="40.0" prefWidth="115.0" text="Messages" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </children>

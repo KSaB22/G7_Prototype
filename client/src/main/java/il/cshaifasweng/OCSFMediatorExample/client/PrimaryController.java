@@ -41,14 +41,28 @@ public class PrimaryController {
     @FXML // fx:id="stressBTN"
     private Button stressBTN; // Value injected by FXMLLoader
 
+    @FXML // fx:id="taskBtn"
+    private Button taskBtn; // Value injected by FXMLLoader
 
-	@FXML // fx:id="taskBtn"
-	private Button taskBtn; // Value injected by FXMLLoader
+    @FXML // fx:id="msgsBtn"
+    private Button msgsBtn; // Value injected by FXMLLoader
+
+    @FXML // fx:id="showTasksBtn"
+    private Button showTasksBtn; // Value injected by FXMLLoader
 
     private String loggedInUser;
 
     private int currentTask = -1;
 
+
+    @Subscribe
+    public void msgListEvent(MessagesListEvent event) {
+        List<String> msgs = List.of(event.getMessage().getData().split("\\|"));
+        lst.getItems().clear();
+        lst.getItems().addAll(msgs);
+        System.out.println(event.getMessage());
+        System.out.println(msgs);
+    }
 
     @Subscribe
     public void givenTaskEvent(GivenTaskEvent event) {
@@ -74,13 +88,13 @@ public class PrimaryController {
                 alert = new Alert(Alert.AlertType.ERROR, "This task is already being worked on");
                 alert.setTitle("Error!");
                 alert.setHeaderText("Error:");
-            } else if(event.getMessage().getMessage().equals("request rejected")){
+            } else if (event.getMessage().getMessage().equals("request rejected")) {
                 alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
                 alert.setTitle("Task rejected");
                 alert.setHeaderText("Your task has been rejected");
             }
 
-            if(alert != null){
+            if (alert != null) {
                 alert.show();
             }
 
@@ -88,7 +102,7 @@ public class PrimaryController {
     }
 
     @Subscribe
-    public void checkingEvent(CheckingEvent event){
+    public void checkingEvent(CheckingEvent event) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -98,10 +112,10 @@ public class PrimaryController {
                 dialog.getDialogPane().getButtonTypes().add(ButtonType.YES);
                 dialog.getDialogPane().getButtonTypes().add(ButtonType.NO);
                 Optional<ButtonType> result = dialog.showAndWait();
-                if(result.isPresent()){
-                    if(result.get() == ButtonType.YES){
+                if (result.isPresent()) {
+                    if (result.get() == ButtonType.YES) {
                         sendMessage("finish " + event.getMessage().getMessage().split(" ")[3] + " " + loggedInUser + " prompt");
-                    } else if(result.get() == ButtonType.NO){
+                    } else if (result.get() == ButtonType.NO) {
                         dialog.close();
                     }
                 }
@@ -110,6 +124,16 @@ public class PrimaryController {
 
     }
 
+    @FXML
+    void onShowTasks(ActionEvent event) {
+        System.out.println("SHOW TASKS CLICKED");
+    }
+
+    @FXML
+    void onMessages(ActionEvent event) {
+        System.out.println("MESSAGES CLICKED");
+        sendMessage("get messages " + loggedInUser);
+    }
 
     @FXML
     void showTask(ActionEvent event) {
@@ -129,17 +153,17 @@ public class PrimaryController {
         }
     }
 
-	@FXML
-	void onNewTask(ActionEvent event) {
-		TextInputDialog dialog  = new TextInputDialog();
-		dialog.setTitle("Create new task");
-		dialog.setHeaderText("Enter info about the task");
-		dialog.setContentText("Info : ");
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent((info) ->{
-			sendMessage("new task " + loggedInUser + " " + info);
-		});
-	}
+    @FXML
+    void onNewTask(ActionEvent event) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Create new task");
+        dialog.setHeaderText("Enter info about the task");
+        dialog.setContentText("Info : ");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent((info) -> {
+            sendMessage("new task " + loggedInUser + " " + info);
+        });
+    }
 
     @FXML
     void onEMG(ActionEvent event) {

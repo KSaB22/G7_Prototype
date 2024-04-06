@@ -14,11 +14,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -141,7 +143,8 @@ public class SimpleServer extends AbstractServer {
                 new EmergencyCall(users[4])
         };
         MngUsrMsg[] mngUserMessages = new MngUsrMsg[]{
-                new MngUsrMsg("Test message", "Some description", users[1], users[0])
+                new MngUsrMsg("Test message", "Some description Lorem lupim dolor sit amet, consectetur adipiscing elit. Vestibulum accumsan justo vel sapien blandit, sit amet sollicitudin mauris sagittis. Nulla facilisi. Integer feugiat justo vitae dui dignissim, eu tempor libero rhoncus. Sed fermentum, justo eget pretium dictum, tortor metus pharetra lacus, id viverra mi velit a lacus. ", users[1], users[0], LocalDateTime.of(2023, 5, 14, 9, 0)),
+                new MngUsrMsg("Test message 2", "Some description 2 Lorem lupim dolor sit amet, consectetur adipiscing elit. Vestibulum accumsan justo vel sapien blandit, sit amet sollicitudin mauris sagittis. Nulla facilisi. Integer feugiat justo vitae dui dignissim, eu tempor libero rhoncus. Sed fermentum, justo eget pretium dictum, tortor metus pharetra lacus, id viverra mi velit a lacus. ", users[1], users[0])
         };
         for (User u : users) {
             session.save(u);
@@ -186,6 +189,27 @@ public class SimpleServer extends AbstractServer {
         query.from(EmergencyCall.class);
         List<EmergencyCall> data = session.createQuery(query).getResultList();
         return data;
+    }
+
+    protected static List<MngUsrMsg> getMessagesToUser(String userId) {
+        // // Create CriteriaBuilder
+        // CriteriaBuilder builder = session.getCriteriaBuilder();
+        // CriteriaQuery<MngUsrMsg> criteria = builder.createQuery(MngUsrMsg.class);
+        // Root<MngUsrMsg> root = criteria.from(MngUsrMsg.class);
+        // // Add criteria to find by "to_id" in MngUsrMsg
+        // criteria.select(root).where(builder.equal(root.get("to_id"), userId));
+        // criteria.orderBy(builder.desc(root.get("created")));
+        // // Execute query
+        // List<MngUsrMsg> resultList = session.createQuery(criteria).getResultList();
+
+        // Define your HQL query to select messages from a specific user by user ID
+        String hql = "FROM MngUsrMsg m WHERE m.to.id = :userId ORDER BY m.created DESC";
+        // Create a Query object
+        Query<MngUsrMsg> query = session.createQuery(hql, MngUsrMsg.class);
+        // Set the parameter for the query
+        query.setParameter("userId", userId);
+        List<MngUsrMsg> resultList = query.getResultList();
+        return resultList;
     }
 
     protected static ArrayList<Task> getUnfinishedTasks(List<Task> tasks) {
@@ -570,11 +594,17 @@ public class SimpleServer extends AbstractServer {
                     message.setData(description);
                     activeUsers.get(toUser.getId()).getClient().sendToClient(message);
                 }
-//                MngUsrMsg mngUsrMsg = new MngUsrMsg(title, description, fromUser, toUser);
-//                session.save(mngUsrMsg);
-//                session.flush();
-//                session.getTransaction().commit();
+               MngUsrMsg mngUsrMsg = new MngUsrMsg(title, description, fromUser, toUser);
+               session.save(mngUsrMsg);
+               session.flush();
+               session.getTransaction().commit();
 //                client.sendToClient(new Message(0, "request rejected (num: "+taskId+")"));
+            } else if (request.startsWith("get messages ")) {
+                String userId = request.split(" ")[2];
+                List<MngUsrMsg> msgList = getMessagesToUser(userId);
+                message.setMessage("list of messages");
+                message.setData(stringForMsgsList(msgList));
+                client.sendToClient(message);
             } else {
                 // DEFAULT BEHAVIOR
             }
@@ -620,6 +650,15 @@ public class SimpleServer extends AbstractServer {
             temp.append(" Task : ")
                     .append(t.getInfo())
                     .append(".");
+        }
+        return temp.toString();
+    }
+
+    private static String stringForMsgsList(List<MngUsrMsg> msgList) {
+        StringBuilder temp = new StringBuilder();
+        for (MngUsrMsg msg : msgList) {
+            temp.append(msg.toString())
+                    .append("|");
         }
         return temp.toString();
     }
