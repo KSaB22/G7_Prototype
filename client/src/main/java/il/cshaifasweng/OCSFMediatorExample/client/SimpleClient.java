@@ -5,9 +5,19 @@ import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 public class SimpleClient extends AbstractClient {
 	
 	private static SimpleClient client = null;
+	private static String host = "";
 
 	private SimpleClient(String host, int port) {
 		super(host, port);
@@ -51,9 +61,17 @@ public class SimpleClient extends AbstractClient {
 	
 	public static SimpleClient getClient() {
 		if (client == null) {
-			client = new SimpleClient("localhost", 3000);
+			if(host == "") {
+				client = new SimpleClient("localhost" , 3000);
+			} else {
+				client = new SimpleClient(host , 3000);
+			}
 		}
 		return client;
+	}
+
+	public static void setSimpleClientHost(String host) {
+		SimpleClient.host = host;
 	}
 
 }

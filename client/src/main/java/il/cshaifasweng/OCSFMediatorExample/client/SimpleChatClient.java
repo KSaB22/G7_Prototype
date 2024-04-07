@@ -23,9 +23,11 @@ public class SimpleChatClient extends Application {
     private static Scene scene;
     private SimpleClient client;
     private static Stage appStage;
+    private static String host;
 
     @Override
     public void start(Stage stage) throws IOException {
+        SimpleClient.setSimpleClientHost(host);
         client = SimpleClient.getClient();
     	client.openConnection();
         scene = new Scene(loadFXML("secondary"), 640, 480);
@@ -82,6 +84,11 @@ public class SimpleChatClient extends Application {
 
 
 	public static void main(String[] args) {
+        if (args.length == 0) {
+            host = "localhost";
+        } else {
+           host = args[0];
+        }
         launch();
     }
 
