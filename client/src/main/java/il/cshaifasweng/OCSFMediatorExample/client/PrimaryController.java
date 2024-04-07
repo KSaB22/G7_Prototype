@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.DoubleAccumulator;
@@ -45,9 +46,12 @@ public class PrimaryController {
 	@FXML // fx:id="taskBtn"
 	private Button taskBtn; // Value injected by FXMLLoader
 
+    @FXML // fx:id="defaultDropdown"
+    private ChoiceBox<String> defaultDropdown; // Value injected by FXMLLoader
     private String loggedInUser;
 
     private int currentTask = -1;
+    private ArrayList<String> options = new ArrayList<>();
 
 
     @Subscribe
@@ -132,13 +136,18 @@ public class PrimaryController {
 	@FXML
 	void onNewTask(ActionEvent event) {
 		TextInputDialog dialog  = new TextInputDialog();
-		dialog.setTitle("Create new task");
-		dialog.setHeaderText("Enter info about the task");
-		dialog.setContentText("Info : ");
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent((info) ->{
-			sendMessage("new task " + loggedInUser + " " + info);
-		});
+        if(defaultDropdown.getValue() == null || defaultDropdown.getValue().equals("None")){
+            dialog.setTitle("Create new task");
+            dialog.setHeaderText("Enter info about the task");
+            dialog.setContentText("Info : ");
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent((info) ->{
+                sendMessage("new task " + loggedInUser + " " + info);
+            });
+        } else {
+            sendMessage("new task " + loggedInUser + " " + defaultDropdown.getValue());
+        }
+
 	}
 
     @FXML
@@ -159,6 +168,12 @@ public class PrimaryController {
     @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
+
+        options.add("None");
+        options.add("Dog sit my dog");
+        options.add("Paint my house");
+        defaultDropdown.getItems().addAll(options);
+
         sendMessage("pull tasks");
         lst.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
