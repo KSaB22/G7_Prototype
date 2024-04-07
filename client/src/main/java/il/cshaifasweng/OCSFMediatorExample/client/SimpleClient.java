@@ -16,6 +16,7 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message message = (Message) msg;
+		System.out.println("Recieved from server: " + message.getMessage());
 		if(message.getMessage().equals("list of tasks")){
 			EventBus.getDefault().post(new TaskMessageEvent(message));
 		}else if(message.getMessage().equals("client added successfully")){
@@ -36,6 +37,14 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new MangerEvent(message));
 		} else if(message.getMessage().startsWith("check for update")){
 			EventBus.getDefault().post(new CheckingEvent(message));
+		} else if (message.getMessage().startsWith("task not found")) {
+			EventBus.getDefault().post(new ErrorEvent(message));
+		} else if (message.getMessage().startsWith("request rejected")) {
+			EventBus.getDefault().post((new ErrorEvent(message)));
+		} else if (message.getMessage().equals("list of messages")) {
+			EventBus.getDefault().post(new MessagesListEvent(message));
+		} else if (message.getMessage().equals("creator cannot be volunteer")) {
+			EventBus.getDefault().post(new ErrorEvent(message));
 		}
 
 	}

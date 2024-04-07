@@ -39,7 +39,7 @@ public class SecondaryController {
     @Subscribe
     public void errorEvent(ErrorEvent event){
         Platform.runLater(() -> {
-            Alert alert;
+            Alert alert = null;
             if(event.getMessage().getMessage().equals("emergency prompt")){
                 alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
                 alert.setTitle("Emergency recorded");
@@ -49,12 +49,14 @@ public class SecondaryController {
                 alert = new Alert(Alert.AlertType.ERROR, "A user with this ID does not exist");
                 alert.setTitle("Error!");
                 alert.setHeaderText("Error:");
-            } else/* if (event.getMessage().getMessage().equals("wrong password"))*/{
+            } else if (event.getMessage().getMessage().equals("wrong password")){
                 alert = new Alert(Alert.AlertType.ERROR, "Wrong password");
                 alert.setTitle("Error!");
                 alert.setHeaderText("Error:");
             }
-            alert.show();
+            if (alert != null) {
+                alert.show();
+            }
         });
     }
 
