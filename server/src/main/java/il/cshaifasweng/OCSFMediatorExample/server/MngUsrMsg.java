@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.server;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @Entity
@@ -21,6 +22,10 @@ public class MngUsrMsg {
     @JoinColumn(name = "to_id", referencedColumnName = "id") // This specifies the foreign key
     private User to;
 
+
+    // Default constructor (no-argument constructor is required by hibernate when using HQL queries)
+    public MngUsrMsg() {
+    }
 
     public MngUsrMsg(String title, String description, User from, User to) {
         super();
@@ -62,5 +67,19 @@ public class MngUsrMsg {
 
     public User getTo() {
         return to;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb  = new StringBuilder();
+        sb.append("Date: ")
+                .append(created.format(DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")));
+        sb.append("\nFrom: ")
+                .append(from.getUsername());
+        sb.append("\nTitle: ")
+                .append(title);
+        sb.append("\nDescription: ")
+                .append(description);
+        return sb.toString();
     }
 }

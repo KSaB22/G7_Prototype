@@ -11,7 +11,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PrimaryController">
    <children>
       <ListView fx:id="lst" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="440.0" AnchorPane.topAnchor="0.0" />
-      <TextArea fx:id="txtBox" editable="false" layoutX="320.0" layoutY="280.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="280.0" />
+      <TextArea fx:id="txtBox" editable="false" layoutX="320.0" layoutY="280.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="280.0" />
       <Button fx:id="stressBTN" layoutX="304.0" layoutY="451.0" mnemonicParsing="false" onAction="#onEMG" prefHeight="49.0" prefWidth="640.0" style="-fx-background-color: #000000;" text="EMERGENCY" textFill="RED" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="430.0" />
       <GridPane alignment="CENTER" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -28,10 +28,12 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="showBtn" alignment="CENTER" mnemonicParsing="false" onAction="#showTask" prefHeight="40.0" prefWidth="115.0" text="Show selected" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="showBtn" alignment="CENTER" mnemonicParsing="false" onAction="#showSelected" prefHeight="40.0" prefWidth="115.0" text="Show selected" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Button fx:id="volunteerBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onVolunteer" prefHeight="40.0" prefWidth="115.0" text="Volunteer" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <Button fx:id="finishBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onEndRequest" prefHeight="40.0" prefWidth="115.0" text="Finish&#10;volunteering" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Button fx:id="taskBtn" mnemonicParsing="false" onAction="#onNewTask" prefHeight="40.0" prefWidth="115.0" text="Create a task" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <Button fx:id="showTasksBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onShowTasks" prefHeight="40.0" prefWidth="115.0" text="Tasks" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Button fx:id="msgsBtn" alignment="CENTER" mnemonicParsing="false" onAction="#onMessages" prefHeight="40.0" prefWidth="115.0" text="Messages" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </children>
