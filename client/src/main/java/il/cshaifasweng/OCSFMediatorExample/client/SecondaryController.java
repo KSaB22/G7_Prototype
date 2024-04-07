@@ -54,7 +54,9 @@ public class SecondaryController {
                 alert.setTitle("Error!");
                 alert.setHeaderText("Error:");
             }
-            alert.show();
+            if (alert != null) {
+                alert.show();
+            }
         });
     }
 

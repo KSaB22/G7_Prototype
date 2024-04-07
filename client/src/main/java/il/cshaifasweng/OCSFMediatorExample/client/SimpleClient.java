@@ -43,6 +43,8 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post((new ErrorEvent(message)));
 		} else if (message.getMessage().equals("list of messages")) {
 			EventBus.getDefault().post(new MessagesListEvent(message));
+		} else if (message.getMessage().equals("creator cannot be volunteer")) {
+			EventBus.getDefault().post(new ErrorEvent(message));
 		}
 
 	}

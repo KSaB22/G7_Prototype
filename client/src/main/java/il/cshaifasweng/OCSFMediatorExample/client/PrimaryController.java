@@ -105,6 +105,10 @@ public class PrimaryController {
                 alert = new Alert(Alert.AlertType.INFORMATION, event.getMessage().getData());
                 alert.setTitle("Task rejected");
                 alert.setHeaderText("Your task has been rejected");
+            } else if (event.getMessage().getMessage().equals("creator cannot be volunteer")) {
+                alert = new Alert(Alert.AlertType.ERROR, "You are the creator of this task. You cannot volunteer to do it.");
+                alert.setTitle("Error!");
+                alert.setHeaderText("Error:");
             }
 
             if (alert != null) {
